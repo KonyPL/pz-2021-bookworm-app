@@ -35,16 +35,65 @@ body {
 }
 
 #search-input {
-  margin-left: 350px;
   width: 1190px;
   height: 40px;
   background-color: #ff8080;
   color: white;
 }
 
+.adminButton {
+  color: white;
+  background-color: #ff8080;
+}
+
+.adminButton:hover {
+  background-color: red;
+  color: white;
+}
+
+
+.adminButtonBook {
+  color: white;
+  background-color: #ff8080;
+  font-size: 30px;
+  text-align: center;
+  width: 300px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.adminButtonBook:hover {
+  background-color: red;
+  color: white;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.dropdownAdmin {
+  margin-left: 220px;
+  vertical-align: middle;
+  font-size: 20px;
+  height: 30px;
+  color: white;
+  background-color: #ff8080;
+  cursor: pointer;
+}
+
+.searchButton {
+  vertical-align: middle;
+  font-size: 30px;
+  height: 47px;
+  color: white;
+  background-color: #ff8080;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background-color: red;
+  color: white;
 }
 
 .buttonChoose:hover {

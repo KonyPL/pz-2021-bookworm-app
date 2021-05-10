@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import background from "./images/viral.jpg";
+import profilePhotoSource from "./images/profile.jpg";
+import solaris from "./images/solaris.jpg";
 
 
 
@@ -103,6 +105,12 @@ class Window extends React.Component {
 			categoriesChosen: false,
 			authorsChosen: false,
 
+			statisticsChosen: false,
+			profileInfoChosen: false,
+			booksChosen: false,
+			reviewsChosen: false,
+			listChosen: false,
+
 			libraryText: 'Library',
 			profileText: 'Profile',
 
@@ -179,6 +187,102 @@ class Window extends React.Component {
 			deleteAccountModal: true,
 			inputValue: '',
 			enemyBoardButtons: true,
+
+			name: 'Dominik',
+			surName: 'Tomkiewicz',
+			userName: 'Dodomonitor2',
+			profilePhoto: profilePhotoSource,
+
+			read: 1,
+			planned: 10,
+			ongoing: 1,
+			reviews: 0,
+			favGenre: 'Science Fiction',
+			favAuthor: 'Stanislaw Lem',
+
+			books: [
+				{ 
+					name: 'Solaris',
+					author: 'Stanislaw Lem',
+					released: 1996,
+				},
+			],
+
+			// reviews: [
+			// 	{
+			// 		book: 'Solaris',
+			// 		rating: 5,
+			// 		content: 'Solaris was an amazing book! I recommend it to everyone.',
+			// 		date: '7th May 2021',
+			// 	},
+			// ],
+
+
+			list: [
+				{ 
+					name: 'Niezwyciezony',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Nieulekly',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Nienazwany',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Nienasycony',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Niedokonany',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Niewiadomy',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Niewidzacy',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Nieprawy',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Nielewy',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+				{ 
+					name: 'Nieskonczony',
+					author: 'Stanislaw Lem',
+					released: 1994,
+				},
+			],
+
+			users: [
+				{
+					userName: 'Dodomonitor2',
+					name: 'Dominik',
+					surName: 'Tomkiewicz',
+				},
+				{
+					userName: 'Dodomonitor',
+					name: 'Tomek',
+					surName: 'Tomczykiewicz',
+				},
+			],
 
 
 		};
@@ -339,26 +443,66 @@ class Window extends React.Component {
 		});
 		if(choice == 'user-stats'){
 			that.setState({
+				newBooksChosen: false,
+				categoriesChosen: false,
+				authorsChosen: false,
+				statisticsChosen: true,
+				profileInfoChosen: false,
+				booksChosen: false,
+				reviewsChosen: false,
+				listChosen: false,
 				profileText: 'My statistics',
 			});
 		}
 		else if(choice == 'user-info'){
 			that.setState({
+				newBooksChosen: false,
+				categoriesChosen: false,
+				authorsChosen: false,
+				statisticsChosen: false,
+				profileInfoChosen: true,
+				booksChosen: false,
+				reviewsChosen: false,
+				listChosen: false,
 				profileText: 'Profile information',
 			});
 		}
 		else if(choice == 'user-books'){
 			that.setState({
+				newBooksChosen: false,
+				categoriesChosen: false,
+				authorsChosen: false,
+				statisticsChosen: false,
+				profileInfoChosen: false,
+				booksChosen: true,
+				reviewsChosen: false,
+				listChosen: false,
 				profileText: 'My books',
 			});
 		}
 		else if(choice == 'user-reviews'){
 			that.setState({
+				newBooksChosen: false,
+				categoriesChosen: false,
+				authorsChosen: false,
+				statisticsChosen: false,
+				profileInfoChosen: false,
+				booksChosen: false,
+				reviewsChosen: true,
+				listChosen: false,
 				profileText: 'My reviews',
 			});
 		}
 		else{
 			that.setState({
+				newBooksChosen: false,
+				categoriesChosen: false,
+				authorsChosen: false,
+				statisticsChosen: false,
+				profileInfoChosen: false,
+				booksChosen: false,
+				reviewsChosen: false,
+				listChosen: true,
 				profileText: 'My list',
 			});
 		}
@@ -368,9 +512,10 @@ class Window extends React.Component {
 	libraryChange(){
 		var that = this;
 		var choice = document.getElementsByClassName('dropdownLibrary')[0].value;
-		// var newBooksDiv = document.getElementsByClassName('newBooks')[0];
-		// var categoriesDiv = document.getElementsByClassName('categories')[0];
-		// var authorsDiv = document.getElementsByClassName('authors')[0];
+		// console.log(document.getElementsByClassName('newBooksListDiv')[0])
+		// var newBooksDiv = document.getElementsByClassName('newBooksListDiv')[0];
+		// var categoriesDiv = document.getElementsByClassName('categoriesListDiv')[0];
+		// var authorsDiv = document.getElementsByClassName('authorsListDiv')[0];
 		that.setState({
 			profilPage: false,
 		});
@@ -381,33 +526,48 @@ class Window extends React.Component {
 				newBooksChosen: true,
 				categoriesChosen: false,
 				authorsChosen: false,
+				statisticsChosen: false,
+				profileInfoChosen: false,
+				booksChosen: false,
+				reviewsChosen: false,
+				listChosen: false,
 				libraryText: 'New Books',
 			});
-			// newBooksDiv.style.visibility = 'visible';
-			// categoriesDiv.style.visibility = 'hidden';
-			// authorsDiv.style.visibility = 'hidden';
+			// newBooksDiv.hidden = 'false';
+			// categoriesDiv.hidden = 'true';
+			// authorsDiv.hidden = 'true';
 		}
 		else if(choice == 'library-categories'){
 			that.setState({
 				newBooksChosen: false,
 				categoriesChosen: true,
 				authorsChosen: false,
+				statisticsChosen: false,
+				profileInfoChosen: false,
+				booksChosen: false,
+				reviewsChosen: false,
+				listChosen: false,	
 				libraryText: 'Categories',
 			});
-			// newBooksDiv.style.visibility = 'hidden';
-			// categoriesDiv.style.visibility = 'visible';
-			// authorsDiv.style.visibility = 'hidden';
+			// newBooksDiv.hidden = 'true';
+			// categoriesDiv.hidden = 'false';
+			// authorsDiv.hidden = 'true';
 		}
 		else{
 			that.setState({
 				newBooksChosen: false,
 				categoriesChosen: false,
 				authorsChosen: true,
+				statisticsChosen: false,
+				profileInfoChosen: false,
+				booksChosen: false,
+				reviewsChosen: false,
+				listChosen: false,
 				libraryText: 'Authors',
 			});
-			// newBooksDiv.style.visibility = 'hidden';
-			// categoriesDiv.style.visibility = 'hidden';
-			// authorsDiv.style.visibility = 'visible';
+			// newBooksDiv.hidden = 'true';
+			// categoriesDiv.hidden = 'true';
+			// authorsDiv.hidden = 'false';
 		}
 	}
 
@@ -455,7 +615,12 @@ class Window extends React.Component {
 	render() {
 		const newBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.title} <br></br> Author: {d.author} <br></br> Released: {d.yearReleased} </button></li>);
 		const categoriesList = this.state.categories.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
-		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='authorsBbutton' class='authorsButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
+		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='authorsButton' class='authorsButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
+		const booksList = this.state.books.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Name: {d.name} <br></br> Author: {d.author} <br></br> Released: {d.released} </button></li>);
+		// const reviewsList = this.state.reviews.map((d) => <li style={{display: 'inline-block'}} key={d.book}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.book} <br></br> {d.rating} <br></br> {d.content} </button></li>);
+		const plannedList = this.state.list.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Name: {d.name} <br></br> Author: {d.author} <br></br> Released: {d.released} </button></li>);
+		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> <br></br><br></br> Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} </p><br></br><br></br><div style={{ textAlign: 'center' }}><button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }}>Reset Password</button><button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }}>Remove User</button></div></li>);
+		const booksListAdmin = this.state.list.map((d) => <li style={{display: 'inline-block'}} key={d.t}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.title} <br></br> Author: {d.author} <br></br> Released: {d.yearReleased} </p><br></br><br></br><div style={{ textAlign: 'center' }}><button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }}>Remove Book</button></div></li>);
 		
 		const noHover = {
 			pointerEvents: 'none',
@@ -464,7 +629,7 @@ class Window extends React.Component {
 		return (
 				this.state.div1Shown ?
 				(
-					<div id="startPage" style={{ width: '100%', height: '1010px', fontSize: '60px', background: '#b30000', overflowX: 'hidden', }}>
+					<div id="startPage" style={{ width: '100%', height: '10000px', fontSize: '60px', background: '#b30000', overflowX: 'hidden', }}>
 					<h1 style={startPageHeader}>Bookworm Application</h1>
 					<p style={{ height: '50px', textAlign: 'center', fontSize: '60px', color: 'white', fontWeight: 'bold' }}>{this.state.startText}</p>
 					<div id='login' style={{textAlign: 'center', color: 'white', fontSize: '40px',}}>
@@ -504,13 +669,15 @@ class Window extends React.Component {
 						this.state.profilPage ?
 						(
 							// backgroundImage: `url(${background})`
-							<div id="startPageUser" style={{ width: '100%', height: '1010px', fontSize: '20px', background: '#b30000', overflowX: 'hidden', }}>
+							<div id="startPageUser" style={{ width: '100%', height: '10000px', fontSize: '20px', background: '#b30000', overflowX: 'hidden', }}>
 						<br />
 							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', }}>
 								<h1 style={startPageHeader}>&nbsp; &nbsp; Bookworm Application &nbsp; &nbsp;</h1>
 								<button class='logoutButton' id='logoutButton' onClick={this.chooseLogout} style={logoutButtonStyle}>Logout</button>
 							</div>
-							<h3 style={startPageRole}>User</h3>
+							<hr></hr>
+							<h3 style={startPageRole}>User - {[this.state.profileText]}</h3>
+							<hr></hr>
 							<div id="pageAfterLogin" class="pageAfterLogin" style={{ backgroundImage: `url(${background})`, display: 'flex', flexDirection: 'row', }}>
 								<div class='top' style={{backgroundColor: '#b30000', width: '100%'}}>
 									<div class='topDropdown' style={{backgroundColor: '#b30000', width: '100%'}}>
@@ -530,7 +697,7 @@ class Window extends React.Component {
 									</select>
 									</div>
 									<div id="search-box">
-										<input id="search-input" type="text" placeholder="Search" onChange={this.handleSearchChange}/>
+										<input id="search-input" type="text" placeholder="Search" style={{ marginLeft: '350px'}} onChange={this.handleSearchChange}/>
 									</div>
 								</div>
 						
@@ -556,40 +723,98 @@ class Window extends React.Component {
 
 								
 							</div>
-							<div style={{ display: 'block', backgroundColor: '#b30000' }}>
+							<hr></hr>
+							<div style={{ display: 'block', backgroundColor: '#b30000', height: '100%'}}>
 								
 								<div class='toView'>
-									<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.profileText]}</p>
-									
+									{/* <p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.libraryText]}</p> */}
+									<div style={{display: 'inline-block'}}>
+										<div class='userStatsDiv' hidden={!this.state.statisticsChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My statistics</p>
+											<div class='statsText' style={{display: 'inline-block', width: '100%', textAlign: 'center'}}>
+												<br></br>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books Read: {this.state.read}</p>
+												<br></br>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books Planned: {this.state.planned}</p>
+												<br></br>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Ongoing: {this.state.ongoing}</p>
+												<br></br>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Reviews: {this.state.reviews}</p>
+												<br></br>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Favourite Genre: {this.state.favGenre}</p>
+												<br></br>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Favourite Author: {this.state.favAuthor}</p>
+											</div>
+
+										</div>
+										<div class='userInformationListDiv' hidden={!this.state.profileInfoChosen} style={{ position: 'absolute', top: '30%', width: '100%' }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My profile</p>
+											<div>
+												<div class='photo' style={{ marginLeft: '50px', backgroundImage: `url(${this.state.profilePhoto})`, width: '500px', height: '600px', display: 'inline-block'}}></div>	
+												<div class='infoText' style={{display: 'inline-block', marginLeft: '50px', textAlign: 'center'}}>
+													<br></br>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Name: {this.state.name}</p>
+													<br></br>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Surname: {this.state.surName}</p>
+													<br></br>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Nick: {this.state.userName}</p>
+													<br></br>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Sth else</p>
+													<br></br>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Sth else 2</p>
+													<br></br>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Sth else 3</p>
+												</div>
+												
+												
+											</div>
+
+										</div>
+										<div class='userBooksDiv' hidden={!this.state.booksChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My books</p>
+											<div class='userBooksList'>
+												{booksList}
+											</div>
+
+										</div>
+										<div class='userReviewsDiv' hidden={!this.state.reviewsChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My reviews</p>
+											<div style={{ textAlign: 'center', color: 'white', fontSize: '50px' }}>
+												{/* {reviewsList} */}
+												<br></br>
+												<br></br>
+												<br></br>
+												You have no reviews yet
+												<br></br>
+												<br></br>
+												<br></br>
+											</div>
+
+										</div>
+										<div class='userListDiv' hidden={!this.state.listChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My list</p>
+											<div>
+												{plannedList}
+											</div>
+
+										</div>
+									</div>
 								</div>
-
-								{/* <div class='newBooks'>
-									<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>New Books</p>
-
-								</div>
-
-								<div class='categories'>
-									<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Categories</p>
-
-								</div>
-
-								<div class='authors'>
-									<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Authors</p>
-
-								</div> */}
 							</div>
 						</div>
 						)
 						:
 						(
 							// backgroundImage: `url(${background})`
-							<div id="startPageUser" style={{ width: '100%', height: '1010px', fontSize: '20px', background: '#b30000', overflowX: 'hidden', }}>
+							<div id="startPageUser" style={{ width: '100%', height: '10000px', fontSize: '20px', background: '#b30000', overflowX: 'hidden', }}>
 						<br />
 							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', }}>
 								<h1 style={startPageHeader}>&nbsp; &nbsp; Bookworm Application &nbsp; &nbsp;</h1>
 								<button class='logoutButton' id='logoutButton' onClick={this.chooseLogout} style={logoutButtonStyle}>Logout</button>
 							</div>
-							<h3 style={startPageRole}>User</h3>
+							<hr></hr>
+							<h3 style={startPageRole}>User - {[this.state.libraryText]}</h3>
+							<hr></hr>
 							<div id="pageAfterLogin" class="pageAfterLogin" style={{ backgroundImage: `url(${background})`, display: 'flex', flexDirection: 'row', }}>
 								<div class='top' style={{backgroundColor: '#b30000', width: '100%'}}>
 									<div class='topDropdown' style={{backgroundColor: '#b30000', width: '100%'}}>
@@ -609,27 +834,34 @@ class Window extends React.Component {
 									</select>
 									</div>
 									<div id="search-box">
-										<input id="search-input" type="text" placeholder="Search" onChange={this.handleSearchChange}/>
+										<input id="search-input" type="text" placeholder="Search" style={{ marginLeft: '350px'}} onChange={this.handleSearchChange}/>
 									</div>
 								</div>
 								
 							</div>
+							<hr></hr>
 							<div style={{ display: 'block', backgroundColor: '#b30000' }}>
 								
 								<div class='toView'>
-									<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.libraryText]}</p>
+									{/* <p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.libraryText]}</p> */}
 									<div style={{display: 'inline-block'}}>
-										<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>New Books</p>
-										<div class='newBooksListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
-											{newBooksList}
+										<div class='newBooksListDiv' hidden={!this.state.newBooksChosen} style={{ position: 'absolute', top: '30%' }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>New books</p>
+											<div class='newBooksListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
+												{newBooksList}
+											</div>
 										</div>
-										<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Categories</p>
-										<div class='categoriesListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
-											{categoriesList}
+										<div class='categoriesListDiv' hidden={!this.state.categoriesChosen} style={{ position: 'absolute', top: '30%' }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Categories</p>
+											<div class='categoriesListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
+												{categoriesList}
+											</div>
 										</div>
-										<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Authors</p>
-										<div class='authorsListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
-											{authorsList}
+										<div class='authorsListDiv' hidden={!this.state.authorsChosen} style={{ position: 'absolute', top: '30%' }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Authors</p>
+											<div class='authorsListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
+												{authorsList}
+											</div>
 										</div>
 									</div>
 								</div>
@@ -642,15 +874,30 @@ class Window extends React.Component {
 						this.state.adminPage ?
 						(
 							// backgroundImage: `url(${background})`
-							<div id="startPageAdmin" style={{ width: '100%', height: '1010px', fontSize: '20px', background: 'grey', overflowX: 'hidden', }}>
+							<div id="startPageAdmin" style={{ width: '100%', height: '10000px', fontSize: '20px', backgroundColor: 'grey', overflowX: 'hidden', }}>
 						<br />
-							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', }}>
+							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', width: '100%' }}>
 								<h1 style={startPageHeader}>&nbsp; &nbsp; Bookworm Application &nbsp; &nbsp;</h1>
 								<button class='logoutButton' id='logoutButton' onClick={this.chooseLogout} style={logoutButtonStyle}>Logout</button>
 							</div>
 							<h3 style={startPageHeader}>Administrator</h3>
-							<div id="pageAfterLogin" class="pageAfterLogin" style={{ backgroundImage: `url(${background})`, display: 'flex', flexDirection: 'row', }}>
-								
+							{/* backgroundImage: `url(${background})` */}
+							<div id="pageAfterLogin" class="pageAfterLogin" style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+								<br></br>
+							<div id="search-box" style={{width: '100%'}}>
+							<hr></hr>
+								<select class="dropdownAdmin" id="user-profile" style={{ display: 'inline-block', width: '100px' }}>
+									<option value="" disabled='true' selected>Filter</option>
+									<option value="user-list">Categories</option>
+									<option value="user-stats">Authors</option>
+									<option value="user-info">Date released</option>
+									<option value="user-books">Date added</option>
+									<option value="user-reviews">Rating</option>
+								</select>
+								<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" />
+								<button style={{display: 'inline-block'}} id="searchButton" class='searchButton'>Search User</button>
+							</div>
+								<br></br>								
 
 								<div className="modalDelete" hidden='true'>
 									<div className="modal_content">
@@ -670,22 +917,40 @@ class Window extends React.Component {
 										</div>
 									</div>
 								</div>
-
 								
 							</div>
+							<hr></hr>
+							<div style={{ display: 'inline-block', alignItems: 'center', marginLeft: '450px' }}>
+								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}}>Add new book</button>
+								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}}>Add new category</button>
+								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}}>Add new author</button>
+							</div>
+							<hr></hr>
+							<br></br>
+							<div style={{width: '800px', height: '600px', alignContent: 'center'}}>
+								{booksListAdmin}
+							</div>
+							
 						</div>	
 						)
 						:
 						(
 							// backgroundImage: `url(${background})`
-							<div id="startPageMode" style={{ width: '100%', height: '1010px', fontSize: '20px', background: 'grey', overflowX: 'hidden', }}>
+							<div id="startPageMode" style={{ width: '100%', height: '10000px', fontSize: '20px', backgroundColor: 'grey', overflowX: 'hidden', }}>
 						<br />
 							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', }}>
 								<h1 style={startPageHeader}>&nbsp; &nbsp; Bookworm Application &nbsp; &nbsp;</h1>
 								<button class='logoutButton' id='logoutButton' onClick={this.chooseLogout} style={logoutButtonStyle}>Logout</button>
 							</div>
 							<h3 style={startPageHeader}>Moderator</h3>
-							<div id="pageAfterLogin" class="pageAfterLogin" style={{ backgroundImage: `url(${background})`, display: 'flex', flexDirection: 'row', }}>
+							{/* backgroundImage: `url(${background})` */}
+							<hr></hr>
+							<div id="pageAfterLogin" class="pageAfterLogin" style={{ display: 'flex', flexDirection: 'row', }}>
+
+								<div style={{width: '100%', marginLeft: '300px'}}>
+									<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" />
+									<button style={{display: 'inline-block'}} id="searchButton" class='searchButton'>Search User</button>
+								</div>
 								
 
 								<div className="modalDelete" hidden='true'>
@@ -708,6 +973,10 @@ class Window extends React.Component {
 								</div>
 
 								
+							</div>
+							<hr></hr>
+							<div style={{width: '800px', height: '600px', alignContent: 'center'}}>
+								{usersList}
 							</div>
 						</div>	
 						)
