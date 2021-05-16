@@ -31,7 +31,7 @@ var booksRouter = require('./routes/books');
 var genresRouter = require('./routes/genres');
 //var userBookRouter = require('./routes/userBooks');
 //var reviewsRouter = require('./routes/reviews');
-//var genreRequestsRouter = require('./routes/genreRequests');
+var genreRequestsRouter = require('./routes/genreRequests');
 
 
 const app = express();
@@ -54,7 +54,7 @@ app.use('/books', booksRouter);
 app.use('/books/genres', genresRouter);
 //app.use('/user-books', userBookRouter);
 //app.use('/reviews', reviewsRouter);
-//app.use('/books/genres/requests', genreRequestsRouter);
+app.use('/books/genres/requests', genreRequestsRouter);
 
 
 // catch 404 and forward to error handler
