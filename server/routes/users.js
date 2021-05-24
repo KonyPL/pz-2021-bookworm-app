@@ -157,4 +157,25 @@ router.patch('/promote', async function(req, res, next) {
   }
 });
 
+//DELETE USER BY ADMIN
+router.post('/authority-delete', async function(req, res, next) {
+  let auth_check = await User.findOne({_id: req.body.auth_id, user_password: req.body.auth_password});
+  if(auth_check){
+    if(auth_check.user_role != 'User'){
+      let user_check = await User.deleteOne({ _id: req.body.user_login});
+      if (user_check.deletedCount == 1){
+        return res.status(200).send("User deleted") 
+      } else {
+        res.status(400).send("Bad data")
+      }
+    } else {
+      res.status(403).send("Authority does not have rights to delete user")
+    }
+  } else {
+    res.status(401).send("Wrong authority credentials or authority does not exist")
+  }
+});
+
+//RESET PASSWORD For User
+
 module.exports = router;
