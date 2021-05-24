@@ -51,6 +51,22 @@ body {
   color: white;
 }
 
+.modeButton {
+  color: white;
+  text-align: center;
+  font-size: 40px;
+  margin-left: 100px;
+  width: 400px;
+  height: 50px;
+  background-color: #ff8080;
+  cursor: pointer;
+}
+
+.modeButton:hover {
+  background-color: red;
+  color: white;
+}
+
 
 .adminButtonBook {
   color: white;
@@ -66,6 +82,23 @@ body {
   background-color: red;
   color: white;
 }
+
+.userButton {
+  margin-left: 50px;
+  color: white;
+  background-color: #ff8080;
+  font-size: 30px;
+  text-align: center;
+  width: 300px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.userButton:hover {
+  background-color: red;
+  color: white;
+}
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
@@ -148,8 +181,8 @@ code {
 .modal_content {
   background-color: white;
   position: absolute;
-  top: 20%;
-  left: 30%;
+  top: 110%;
+  left: 5%;
   width: 40%;
   padding: 20px;
   border-radius: 5px;
