@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import background from "./images/viral.jpg";
 import profilePhotoSource from "./images/noprofile.jpg";
 import solaris from "./images/solaris.jpg";
+import { isCompositeComponent } from 'react-dom/test-utils';
 
 
 
@@ -338,9 +339,6 @@ class Window extends React.Component {
 		console.log("Login nacisniety")
 		var type = ''
 
-		that.clearUsersList();
-		that.getUsersList();
-
 		var userAccountCheckbox = document.getElementsByClassName('userAccount')[0];
 		var adminAccountCheckbox = document.getElementsByClassName('adminAccount')[0];
 		var modeAccountCheckbox = document.getElementsByClassName('modeAccount')[0];
@@ -423,7 +421,14 @@ class Window extends React.Component {
 					surName: data.user_surname,
 					role: data.user_role
 				});
+				that.clearUsersList()
+				that.getUsersList()
 			}
+			// else if(userAccountCheckbox.checked == false && adminAccountCheckbox.checked == false && modeAccountCheckbox.checked == false){
+			// 	that.setState({
+			// 		startText: 'Please choose account type',
+			// 	});
+			// }
 			else{
 				that.setState({
 					startText: 'Specified account is different type',
@@ -431,11 +436,6 @@ class Window extends React.Component {
 					adminPage: false,
 					modePage: false,
 				});
-				if(userAccountCheckbox.checked == false && adminAccountCheckbox.checked == false && modeAccountCheckbox.checked == false){
-					that.setState({
-						startText: 'Please choose account type',
-					});
-				}
 				userAccountCheckbox.checked = false;
 				adminAccountCheckbox.checked = false;
 				modeAccountCheckbox.checked = false;
@@ -571,16 +571,54 @@ class Window extends React.Component {
 		});
 	}
 
-	removeUser(){
+	removeUser(username){
 		var that = this;
 
 		console.log("Usuwanie usera");
+
+		const requestOptions = {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({"auth_id": that.state.user_id, "auth_password": that.state.password, "user_login": username})
+		};
+		var stat = 0;
+		fetch('https://localhost:9000/users/authority-delete', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			console.log(stat)
+			if(stat == 200){
+			}
+		})
+
+		that.clearUsersList()
+		that.getUsersList()
 	}
 
-	resetUserPassword(){
+	resetUserPassword(username){
 		var that = this;
 
 		console.log("Reset hasla usera");
+
+		const requestOptions = {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({"auth_id": that.state.user_id, "auth_password": that.state.password, "user_login": username})
+		};
+		var stat = 0;
+		fetch('https://localhost:9000/users/authority-reset-pass', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			console.log(stat)
+			if(stat == 200){
+				return response.body
+			}
+			else{
+				return ''
+			}
+		})
+		.then(function(response) { 
+			console.log(response)
+		})
 	}
 
 	promote(role, username){
@@ -603,7 +641,8 @@ class Window extends React.Component {
 			stat = response.status;
 			console.log(stat)
 			if(stat == 200){
-
+				that.clearUsersList()
+				that.getUsersList()
 			}
 		})
 	}
@@ -664,7 +703,7 @@ class Window extends React.Component {
 		if(that.state.password = that.state.inputValue){
 			var stat = 0;
 			const requestOptions = {
-				method: 'POST',
+				method: 'DELETE',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ _id: that.state.user_id, user_password: that.state.password})
 			};
@@ -887,8 +926,8 @@ class Window extends React.Component {
 		const plannedList = this.state.list.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Name: {d.name} <br></br> Author: {d.author} <br></br> Released: {d.released} </button></li>);
 		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> <br></br>
 			<br></br> Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} <br></br><br></br> Role: {d.usRole} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }}>Reset Password</button>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }}>Remove User</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.resetUserPassword(d.userName)}>Reset Password</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeUser(d.userName)}>Remove User</button>
 			<br></br><br></br>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Administrator', d.userName)}>Promote User to Administrator</button>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Moderator', d.userName)}>Promote User to Moderator</button>
