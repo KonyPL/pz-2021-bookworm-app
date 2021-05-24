@@ -68,7 +68,7 @@ router.post('/logout', async function(req, res, next) {
 });
 
 // DELETE USER
-router.post('/delete', async function(req, res, next) {
+router.delete('/delete', async function(req, res, next) {
   let user_check = await User.deleteOne({ _id: req.body._id, user_password: req.body.user_password});
   if (user_check.deletedCount == 1){
     return res.status(200).send("User deleted") 
@@ -154,6 +154,62 @@ router.patch('/promote', async function(req, res, next) {
     }
   } else {
     res.status(401).send("Wrong promotor credentials or promotor does not exist")
+  }
+});
+
+//DELETE USER BY ADMIN
+router.delete('/authority-delete', async function(req, res, next) {
+  let auth_check = await User.findOne({_id: req.body.auth_id, user_password: req.body.auth_password});
+  if(auth_check){
+    if(auth_check.user_role != 'User'){
+      let user_check = await User.deleteOne({ user_login: req.body.user_login});
+      if (user_check.deletedCount == 1){
+        return res.status(200).send("User deleted") 
+      } else {
+        res.status(400).send("Bad data")
+      }
+    } else {
+      res.status(403).send("Authority does not have rights to delete user")
+    }
+  } else {
+    res.status(401).send("Wrong authority credentials or authority does not exist")
+  }
+});
+
+function makeTempPasswd(length) {
+  var result           = [];
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result.push(characters.charAt(Math.floor(Math.random() * 
+charactersLength)));
+ }
+ return result.join('');
+}
+
+//RESET PASSWORD For User
+router.patch('/authority-reset-pass', async function(req, res, next) {
+  let auth_check = await User.findOne({_id: req.body.auth_id, user_password: req.body.auth_password});
+  if(auth_check){
+    if(auth_check.user_role != 'User'){
+      let user_check = await User.findOne({ user_login: req.body.user_login});
+      if (user_check){
+        var passwd = makeTempPasswd(8);
+        user_check.user_password = passwd;
+        try {
+          await user_check.save()
+          res.status(200).send('Successfully reseted password to: '+passwd);
+        } catch (error) {
+          res.status(400).send(error)
+        }
+      } else {
+        res.status(400).send("Bad data")
+      }
+    } else {
+      res.status(403).send("Authority does not have rights to reset password for user")
+    }
+  } else {
+    res.status(401).send("Wrong authority credentials or authority does not exist")
   }
 });
 
