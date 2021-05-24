@@ -77,7 +77,7 @@
 						}
 					},
 					"request": {
-						"method": "POST",
+						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -269,6 +269,76 @@
 							"path": [
 								"users",
 								"promote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH reset password for User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"auth_id\": \"609948ecbc19a31ba05e015d\",\n    \"auth_password\": \"testupdate\",\n    \"user_login\": \"user6\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/authority-reset-pass",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"authority-reset-pass"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH delete User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"auth_id\": \"609948ecbc19a31ba05e015d\",\n    \"auth_password\": \"testupdate\",\n    \"user_login\": \"user6\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/authority-delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"authority-delete"
 							]
 						}
 					},
