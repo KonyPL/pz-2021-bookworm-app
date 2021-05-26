@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 // ADD REVIEW
 router.post('/add', async function(req, res, next) {
-  let user_check = await User.findOne({_id: req.body.user_id});
+  let user_check = await User.findOne({_id: req.body.user_id, user_password: req.body.user_password});
   if (user_check){
     let book_check = await Book.findOne({_id: req.body.book_id});
     if(book_check){
@@ -41,7 +41,7 @@ router.post('/add', async function(req, res, next) {
 // UPDATE REVIEW
 router.patch('/update', async function(req, res, next) {
   try{
-  let user_check = await User.findOne({_id: req.body.user_id});
+  let user_check = await User.findOne({_id: req.body.user_id, user_password: req.body.user_password});
   if (user_check){
     let review_check = await Review.findOne({_id: req.body.review_id, user_id: req.body.user_id});
     if(review_check){
@@ -70,7 +70,7 @@ router.patch('/update', async function(req, res, next) {
 
 // DELETE REVIEW
 router.delete('/delete', async function(req, res, next) {
-  let user_check = await User.findOne({_id: req.body.user_id});
+  let user_check = await User.findOne({_id: req.body.user_id, user_password: req.body.user_password});
   if (user_check){
     let review_check = await Review.deleteOne({_id: req.body.review_id, user_id: req.body.user_id});
     if(review_check.deletedCount == 1){
@@ -137,7 +137,6 @@ router.get('/list', async function(req, res, next) {
     } else {
       res.status(400).send("User doesn't exist");
     }
-    
   } else {
     let all = await Review.find();
     let reviews = await readable_review(all)
@@ -155,7 +154,5 @@ router.get('/review', async function(req, res, next) {
     res.status(400).send("Review doesn't exist")
   }
 });
-
-
 
 module.exports = router;
