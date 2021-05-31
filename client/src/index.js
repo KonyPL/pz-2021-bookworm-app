@@ -120,6 +120,11 @@ class Window extends React.Component {
 		this.removeBook = this.removeBook.bind(this);
 		this.updateBook = this.updateBook.bind(this);
 
+		this.getUserBooksList = this.getUserBooksList.bind(this);
+		this.userAddBook = this.userAddBook.bind(this);
+		this.userRemoveBook = this.userRemoveBook.bind(this);
+		this.userUpdateBook = this.userUpdateBook.bind(this);
+
 
 		this.state = { 
 			div1Shown: true, 
@@ -213,6 +218,10 @@ class Window extends React.Component {
 			],
 
 			adminBooksList: [
+
+			],
+
+			userBooksList: [
 
 			],
 
@@ -352,7 +361,6 @@ class Window extends React.Component {
 		var userAccountCheckbox = document.getElementsByClassName('userAccount')[0];
 		var adminAccountCheckbox = document.getElementsByClassName('adminAccount')[0];
 		var modeAccountCheckbox = document.getElementsByClassName('modeAccount')[0];
-		console.log(event.target.disabled)
 		if(event.target.checked == true){
 			userAccountCheckbox.disabled = true;
 			adminAccountCheckbox.disabled = true;
@@ -474,6 +482,10 @@ class Window extends React.Component {
 			that.clearAdminBooksList()
 			that.getAdminBooksList()
 		})
+		.then(function(){
+			that.clearUserBooksList()
+			that.getUserBooksList()
+		})
 	}
 
 	handleUsernameChange(e) {
@@ -554,7 +566,6 @@ class Window extends React.Component {
 		fetch('https://localhost:9000/users/list', requestOptions)
 		.then(function(response) { 
 			stat = response.status;
-			console.log(stat)
 			if(stat == 200){
 				receivedUsers = response.json();
 			}
@@ -574,7 +585,6 @@ class Window extends React.Component {
 				.then(function(response) { 
 					stat = response.status;
 					var user_data;
-					console.log(stat);
 					if(stat == 200){
 						user_data = response.json()
 					}
@@ -582,7 +592,6 @@ class Window extends React.Component {
 				})
 				.then(function(user_data){
 					if(stat == 200){
-						console.log(user_data);
 						exName = user_data.user_name;
 						exSur = user_data.user_surname;
 						role = user_data.user_role;
@@ -1058,11 +1067,9 @@ class Window extends React.Component {
 		.then(function(response) { 
 			stat = response.status;
 			var receivedBooks = response.json();
-			console.log(stat)
 			return receivedBooks;
 		})
 		.then(function(receivedBooks){
-			console.log(receivedBooks)
 			if(stat == 200){
 				for(var i = 0; i < receivedBooks.length; i++){
 					var genre;
@@ -1158,12 +1165,108 @@ class Window extends React.Component {
 		mod.hidden = true;
 	}
 
+	getUserBooksList(){
+		console.log('Getting user books list')
+		var that = this;
+		var stat = 0;
+		var date;
+		var book;
+		var genre;
+		var requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+		fetch('https://localhost:9000/user-books/list', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(function(data){
+			if(stat == 200){
+				for(var i = 0; i < data.length; i++){
+					if(data[i].user_login == that.state.userName){
+						var entry = data[i];
+						stat = 0;
+						requestOptions = {
+							method: 'GET',
+							headers: { 'Content-Type': 'application/json' },
+						};
+						fetch('https://localhost:9000/books/book?id=' + data[i].book_id, requestOptions)
+						.then(function(response) { 
+							stat = response.status;
+							return response.json()
+						})
+						.then(function(bookReceived){
+							console.log(bookReceived)
+							if(stat == 200){
+								book = bookReceived;
+							}
+							return book;
+						})
+						.then(function(book){
+							// stat = 0;
+							// requestOptions = {
+							// 	method: 'GET',
+							// 	headers: { 'Content-Type': 'application/json' },
+							// };
+							// fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptions)
+							// .then(function(response) { 
+							// 	stat = response.status;
+							// 	return response.json()
+							// })
+							// .then(function(genreReceived){
+							// 	console.log(genreReceived)
+							// 	if(stat == 200){
+							// 		genre = genreReceived;
+							// 	}
+							// })
+							// .then(function(){
+								try{
+									date = book.book_released.substring(0, 10)
+								}
+								catch(error){
+		
+								}
+							// })
+							// .then(function(){
+								// console.log(genre)
+								that.setState({
+									userBooksList: that.state.userBooksList.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_progress: entry.book_progress, book_status: entry.book_status })
+								})
+							// })
+						})
+					}
+				}
+			}
+		})
+
+	}
+
+	clearUserBooksList(){
+		var that = this;
+		that.setState({
+			userBooksList: []
+		})
+	}
+
+	userAddBook(){
+
+	}
+
+	userRemoveBook(){
+
+	}
+
+	userUpdateBook(){
+
+	}
+
 	render() {
 		const newBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.title} <br></br> Author: {d.author} <br></br> Released: {d.yearReleased} </button></li>);
 		const categoriesList = this.state.categories.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
 		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='authorsButton' class='authorsButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
-		const booksList = this.state.books.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Name: {d.name} <br></br> Author: {d.author} <br></br> Released: {d.released} </button></li>);
-		// const reviewsList = this.state.reviews.map((d) => <li style={{display: 'inline-block'}} key={d.book}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.book} <br></br> {d.rating} <br></br> {d.content} </button></li>);
+		const booksList = this.state.userBooksList.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ marginLeft: '50px', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> 
+			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} </button></li>);
 		const plannedList = this.state.list.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Name: {d.name} <br></br> Author: {d.author} <br></br> Released: {d.released} </button></li>);
 		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> <br></br>
 			<br></br> Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} <br></br><br></br> Role: {d.usRole} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
@@ -1225,7 +1328,7 @@ class Window extends React.Component {
 						this.state.profilPage ?
 						(
 							// backgroundImage: `url(${background})`
-							<div id="startPageUser" style={{ width: '100%', height: '10000px', fontSize: '20px', background: '#b30000', overflowX: 'hidden', }}>
+							<div id="startPageUser" style={{ width: '100%', height: '10000px', fontSize: '20px', background: '#b30000', }}>
 						<br />
 							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', }}>
 								<h1 style={startPageHeader}>&nbsp; &nbsp; Bookworm Application &nbsp; &nbsp;</h1>
@@ -1381,7 +1484,7 @@ class Window extends React.Component {
 						:
 						(
 							// backgroundImage: `url(${background})`
-							<div id="startPageUser" style={{ width: '100%', height: '10000px', fontSize: '20px', background: '#b30000', overflowX: 'hidden', }}>
+							<div id="startPageUser" style={{ width: '100%', height: '10000px', fontSize: '20px', background: '#b30000', }}>
 						<br />
 							<div id="startHeader" style={{display: 'flex', flexDirection: 'row', marginLeft: '38%', }}>
 								<h1 style={startPageHeader}>&nbsp; &nbsp; Bookworm Application &nbsp; &nbsp;</h1>
@@ -1422,19 +1525,19 @@ class Window extends React.Component {
 									<div style={{display: 'inline-block'}}>
 										<div class='newBooksListDiv' hidden={!this.state.newBooksChosen} style={{ position: 'absolute', top: '30%' }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>New books</p>
-											<div class='newBooksListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
+											<div class='newBooksListView' style={{overflowY: 'scroll', height: '600px'}}>
 												{newBooksList}
 											</div>
 										</div>
 										<div class='categoriesListDiv' hidden={!this.state.categoriesChosen} style={{ position: 'absolute', top: '30%' }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Categories</p>
-											<div class='categoriesListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
+											<div class='categoriesListView' style={{overflowY: 'scroll', height: '600px'}}>
 												{categoriesList}
 											</div>
 										</div>
 										<div class='authorsListDiv' hidden={!this.state.authorsChosen} style={{ position: 'absolute', top: '30%' }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Authors</p>
-											<div class='authorsListView' style={{overflowY: 'scroll', overflowX: 'hidden', height: '600px'}}>
+											<div class='authorsListView' style={{overflowY: 'scroll', height: '600px'}}>
 												{authorsList}
 											</div>
 										</div>
