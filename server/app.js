@@ -29,8 +29,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var booksRouter = require('./routes/books');
 var genresRouter = require('./routes/genres');
-//var userBookRouter = require('./routes/userBooks');
-//var reviewsRouter = require('./routes/reviews');
+var userBookRouter = require('./routes/userBooks');
+var reviewsRouter = require('./routes/reviews');
 var genreRequestsRouter = require('./routes/genreRequests');
 
 
@@ -52,8 +52,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/books', booksRouter);
 app.use('/books/genres', genresRouter);
-//app.use('/user-books', userBookRouter);
-//app.use('/reviews', reviewsRouter);
+app.use('/user-books', userBookRouter);
+app.use('/reviews', reviewsRouter);
 app.use('/books/genres/requests', genreRequestsRouter);
 
 
