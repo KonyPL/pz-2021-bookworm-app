@@ -101,6 +101,24 @@ class Window extends React.Component {
 		this.updateProfilePopup = this.updateProfilePopup.bind(this);
 		this.handleClickCloseUpdatePopup = this.handleClickCloseUpdatePopup.bind(this);
 		this.handleSubmitUpdatePopup = this.handleSubmitUpdatePopup.bind(this);
+		this.handleChangeNewBookName = this.handleChangeNewBookName.bind(this);
+
+		this.handleChangeNewBookAuthor = this.handleChangeNewBookAuthor.bind(this);
+		this.handleSubmitNewBook = this.handleSubmitNewBook.bind(this);
+		this.handleSubmitNewBookCancel = this.handleSubmitNewBookCancel.bind(this);
+		this.addNewBookPressed = this.addNewBookPressed.bind(this);
+
+		this.handleChangeNewGenreName = this.handleChangeNewGenreName.bind(this);
+		this.handleChangeNewGenreDescription = this.handleChangeNewGenreDescription.bind(this);
+		this.handleSubmitNewGenre = this.handleSubmitNewGenre.bind(this);
+		this.handleSubmitNewGenreCancel = this.handleSubmitNewGenreCancel.bind(this);
+		this.addNewGenrePressed = this.addNewGenrePressed.bind(this);
+
+		this.getAdminBooksList = this.getAdminBooksList.bind(this);
+		this.clearAdminBooksList = this.clearAdminBooksList.bind(this);
+		this.updateAdminBooksList = this.updateAdminBooksList.bind(this);
+		this.removeBook = this.removeBook.bind(this);
+		this.updateBook = this.updateBook.bind(this);
 
 
 		this.state = { 
@@ -192,6 +210,10 @@ class Window extends React.Component {
 				{
 					name: 'Henryk Sienkiewicz',
 				},
+			],
+
+			adminBooksList: [
+
 			],
 
 			search: '',
@@ -302,6 +324,17 @@ class Window extends React.Component {
 				},
 			],
 
+			newBookName: '',
+			newBookAuthor: '',
+			modalNewBookStatus: '',
+
+			newGenreName: '',
+			newGenreDescription: '',
+			modalNewGenreStatus: '',
+
+			updateBookDate: '',
+			updateBookId: '',
+			updateBookGenre: '',
 
 		};
 
@@ -424,11 +457,6 @@ class Window extends React.Component {
 				that.clearUsersList()
 				that.getUsersList()
 			}
-			// else if(userAccountCheckbox.checked == false && adminAccountCheckbox.checked == false && modeAccountCheckbox.checked == false){
-			// 	that.setState({
-			// 		startText: 'Please choose account type',
-			// 	});
-			// }
 			else{
 				that.setState({
 					startText: 'Specified account is different type',
@@ -442,7 +470,10 @@ class Window extends React.Component {
 				type = ''
 			}
 		})
-
+		.then(function(){
+			that.clearAdminBooksList()
+			that.getAdminBooksList()
+		})
 	}
 
 	handleUsernameChange(e) {
@@ -550,14 +581,16 @@ class Window extends React.Component {
 					return user_data;
 				})
 				.then(function(user_data){
-					console.log(user_data);
-					exName = user_data.user_name;
-					exSur = user_data.user_surname;
-					role = user_data.user_role;
-					usName = user_data.user_login;
-					that.setState({
-						users: that.state.users.concat({ userName: usName, name: exName, surName: exSur, usRole: role })
-					});
+					if(stat == 200){
+						console.log(user_data);
+						exName = user_data.user_name;
+						exSur = user_data.user_surname;
+						role = user_data.user_role;
+						usName = user_data.user_login;
+						that.setState({
+							users: that.state.users.concat({ userName: usName, name: exName, surName: exSur, usRole: role })
+						});
+					}
 				})
 			}
 		})
@@ -917,6 +950,214 @@ class Window extends React.Component {
 		this.setState({ inputValue: event.target.value });
 	}
 
+	addNewBookPressed(){
+		var mod = document.getElementsByClassName('modalNewBook')[0];
+		mod.hidden = false;
+	}
+
+	handleChangeNewBookName(event){
+		this.setState({ newBookName: event.target.value });
+	}
+
+	handleChangeNewBookAuthor(event){
+		this.setState({ newBookAuthor: event.target.value });
+	}
+
+	handleSubmitNewBook(){
+		var mod = document.getElementsByClassName('modalNewBook')[0];
+		var that = this;
+		console.log('Adding New Book')
+		var stat = 0;
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ book_name: that.state.newBookName, book_author: that.state.newBookAuthor})
+		};
+
+		fetch('https://localhost:9000/books/add', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			console.log(stat)
+			if(stat == 201){
+				that.setState({
+					modalNewBookStatus: ""
+				})
+				mod.hidden = true;
+			}
+			else{
+				that.setState({
+					modalNewBookStatus: "Couldn't add specified book"
+				})
+			}
+		})
+		that.updateAdminBooksList()
+	}
+
+	handleSubmitNewBookCancel(){
+		var mod = document.getElementsByClassName('modalNewBook')[0];
+		mod.hidden = true;
+	}
+
+	addNewGenrePressed(){
+		var mod = document.getElementsByClassName('modalNewGenre')[0];
+		mod.hidden = false;
+	}
+
+	handleChangeNewGenreName(event){
+		this.setState({ newGenreName: event.target.value });
+	}
+
+	handleChangeNewGenreDescription(event){
+		this.setState({ newGenreDescription: event.target.value });
+	}
+
+	handleSubmitNewGenre(){
+		var mod = document.getElementsByClassName('modalNewGenre')[0];
+		var that = this;
+		console.log('Adding New Genre')
+		var stat = 0;
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name: that.state.newGenreName, description: that.state.newGenreDescription})
+		};
+
+		fetch('https://localhost:9000/books/genres/add', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			console.log(stat)
+			if(stat == 201){
+				that.setState({
+					modalNewGenreStatus: ""
+				})
+				mod.hidden = true;
+			}
+			else{
+				that.setState({
+					modalNewGenreStatus: "Couldn't add specified genre"
+				})
+			}
+		})
+	}
+
+	handleSubmitNewGenreCancel(){
+		var mod = document.getElementsByClassName('modalNewGenre')[0];
+		mod.hidden = true;
+	}
+
+	getAdminBooksList(){
+		var that = this;
+		console.log('Getting Books List for Admin')
+		var stat = 0;
+		const requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+
+		fetch('https://localhost:9000/books/list', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			var receivedBooks = response.json();
+			console.log(stat)
+			return receivedBooks;
+		})
+		.then(function(receivedBooks){
+			console.log(receivedBooks)
+			if(stat == 200){
+				for(var i = 0; i < receivedBooks.length; i++){
+					var genre;
+					const requestOptions = {
+						method: 'GET',
+						headers: { 'Content-Type': 'application/json' },
+					};
+					fetch('https://localhost:9000/books/genres/genre?id=' + receivedBooks[i].book_genre, requestOptions)
+					.then(function(res){
+						if(res.status == 200){
+							genre = res.json().name;
+						}
+					})
+					var date;
+					try{
+						date = receivedBooks[i].book_released.substring(0, 10)
+					}
+					catch(error){
+
+					}
+					that.setState({
+						adminBooksList: that.state.adminBooksList.concat({book_rating: receivedBooks[i].book_rating, book_id: receivedBooks[i]._id, book_name: receivedBooks[i].book_name, book_author: receivedBooks[i].book_author, book_released: date, book_genre: genre})
+					})
+				}
+			}
+		})
+	}
+
+	clearAdminBooksList(){
+		var that = this;
+		that.setState({
+			adminBooksList: [],
+		});
+	}
+
+	updateAdminBooksList(){
+		this.clearAdminBooksList();
+		this.getAdminBooksList();
+	}
+
+	removeBook(id){
+		var that = this;
+		var stat = 0;
+		const requestOptions = {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ book_id: id })
+		};
+		fetch('https://localhost:9000/books/delete', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			if(stat == 200){
+
+			}
+		})
+		that.updateAdminBooksList();
+	}
+
+	updateBook(id, genre){
+		var that = this;
+		that.setState({
+			updateBookId: id,
+			updateBookGenre: genre
+		})
+		var mod = document.getElementsByClassName('modalUpdateBook')[0];
+		mod.hidden = false;
+	}
+
+	handleChangeUpdateBook(event){
+		this.setState({ newBookDate: event.target.value });
+	}
+
+	handleSubmitUpdateBookCancel(){
+		var mod = document.getElementsByClassName('modalUpdateBook')[0];
+		var that = this;
+		var stat = 0;
+		const requestOptions = {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: that.state.updateBookGenre })
+		};
+		fetch('https://localhost:9000/books/update', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			if(stat == 200){
+				mod.hidden = true;
+			}
+		})
+	}
+
+	handleSubmitUpdateBookCancel(){
+		var mod = document.getElementsByClassName('modalUpdateBook')[0];
+		mod.hidden = true;
+	}
+
 	render() {
 		const newBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.title} <br></br> Author: {d.author} <br></br> Released: {d.yearReleased} </button></li>);
 		const categoriesList = this.state.categories.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
@@ -932,7 +1173,10 @@ class Window extends React.Component {
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Administrator', d.userName)}>Promote User to Administrator</button>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Moderator', d.userName)}>Promote User to Moderator</button>
 		</div></li>);
-		const booksListAdmin = this.state.list.map((d) => <li style={{display: 'inline-block'}} key={d.t}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.title} <br></br> Author: {d.author} <br></br> Released: {d.yearReleased} </p><br></br><br></br><div style={{ textAlign: 'center' }}><button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }}>Remove Book</button></div></li>);
+		const booksListAdmin = this.state.adminBooksList.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.book_name} <br></br> Author: {d.book_author} <br></br> Released: {d.book_released} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeBook(d.book_id)}>Remove Book</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.updateBook(d.book_id, d.book_genre)}>Update Book</button>
+		</div></li>);
 		
 		const noHover = {
 			pointerEvents: 'none',
@@ -1252,14 +1496,66 @@ class Window extends React.Component {
 							</div>
 							<hr></hr>
 							<div style={{ display: 'inline-block', alignItems: 'center', marginLeft: '450px' }}>
-								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}}>Add new book</button>
-								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}}>Add new category</button>
-								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}}>Add new author</button>
+							<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}} onClick={this.updateAdminBooksList}>Update book list</button>
+								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}} onClick={this.addNewBookPressed}>Add new book</button>
+								<button class='adminButtonBook' id="bottom" style={{marginLeft: '20px'}} onClick={this.addNewGenrePressed}>Add new genre</button>
 							</div>
+
 							<hr></hr>
 							<br></br>
 							<div style={{width: '800px', height: '600px', alignContent: 'center'}}>
 								{booksListAdmin}
+							</div>
+
+							<div className="modalNewBook" hidden='true'>
+								<div className="modal">
+									<h2 style={{textAlign: 'center'}}>Type in Book Name and Book Author</h2>
+									<br></br>
+									<h2 style={{textAlign: 'center'}}>{this.state.modalNewBookStatus}</h2>
+									<div style={{ textAlign: 'center'}}> 
+										<input type="text" name="name" onChange={this.handleChangeNewBookName} placeholder='Name' style={{ display: 'block', height: '30px', width: '800px'}}/>
+										<br></br>
+										<input type="text" name="name" onChange={this.handleChangeNewBookAuthor} placeholder='Author' style={{ display: 'block', height: '30px', width: '800px'}}/>
+									</div>
+									<br></br>
+									<div style={{ textAlign: 'center'}}> 
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewBook} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Add Book</button>
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewBookCancel} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Cancel</button>
+									</div>
+								</div>
+							</div>
+
+							<div className="modalNewGenre" hidden='true'>
+								<div className="modal">
+									<h2 style={{textAlign: 'center'}}>Type in Genre Name and Genre Description</h2>
+									<br></br>
+									<h2 style={{textAlign: 'center'}}>{this.state.modalNewGenreStatus}</h2>
+									<div style={{ textAlign: 'center'}}> 
+										<input type="text" name="name" onChange={this.handleChangeNewGenreName} placeholder='Name' style={{ display: 'block', height: '30px', width: '800px'}}/>
+										<br></br>
+										<input type="text" name="name" onChange={this.handleChangeNewGenreDescription} placeholder='Description' style={{ display: 'block', height: '90px', width: '800px'}}/>
+									</div>
+									<br></br>
+									<div style={{ textAlign: 'center'}}> 
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewGenre} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Add Genre</button>
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewGenreCancel} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Cancel</button>
+									</div>
+								</div>
+							</div>
+
+							<div className="modalUpdateBook" hidden='true'>
+								<div className="modal">
+									<h2 style={{textAlign: 'center'}}>Type in Updated Release Date of Book</h2>
+									<br></br>
+									<div style={{ textAlign: 'center'}}> 
+										<input type="text" name="name" onChange={this.handleChangeUpdateBook} placeholder='Name' style={{ display: 'block', height: '30px', width: '800px'}}/>
+									</div>
+									<br></br>
+									<div style={{ textAlign: 'center'}}> 
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBook} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Update Book</button>
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBookCancel} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Cancel</button>
+									</div>
+								</div>
 							</div>
 							
 						</div>	
@@ -1293,7 +1589,7 @@ class Window extends React.Component {
 										<div style={{ textAlign: 'center'}}>
 											<label>
 											Password:
-											<input type="text" name="name" onChange={this.handleChangeDeletePopup} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '300px'}}/>
+											<input type="password" name="name" onChange={this.handleChangeDeletePopup} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '300px'}}/>
 											</label>
 										</div>
 										<br />
