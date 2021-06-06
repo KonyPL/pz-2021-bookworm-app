@@ -444,6 +444,33 @@
 							"path": [
 								"books",
 								"list"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Zwierzchnik",
+									"disabled": true
+								},
+								{
+									"key": "author",
+									"value": "Adam Mickiewicz",
+									"disabled": true
+								},
+								{
+									"key": "genre",
+									"value": "Dramat",
+									"disabled": true
+								},
+								{
+									"key": "release_date",
+									"value": "1999-12-11",
+									"disabled": true
+								},
+								{
+									"key": "rating",
+									"value": "0",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -768,7 +795,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"book_id\": \"60a160d58f6c1f3ae89ad660\",\n    \"user_id\": \"60abaf774949b41fb4275d6c\",\n    \"user_password\": \"test\",\n    \"book_status\": \"Ongoing\",\n    \"book_progress\": 0\n}"
+							"raw": "{\n    \"book_id\": \"60bd21ab6bf1ed41fcac7137\",\n    \"user_id\": \"60ab807e2efa551a48982526\",\n    \"user_password\": \"test\",\n    \"book_status\": \"Finished\",\n    \"book_progress\": 1\n}"
 						},
 						"url": {
 							"raw": "https://localhost:9000/user-books/add",
@@ -836,7 +863,7 @@
 							}
 						],
 						"url": {
-							"raw": "https://localhost:9000/user-books/list",
+							"raw": "https://localhost:9000/user-books/list?user_login=dodo",
 							"protocol": "https",
 							"host": [
 								"localhost"
@@ -854,8 +881,7 @@
 								},
 								{
 									"key": "user_login",
-									"value": "test7",
-									"disabled": true
+									"value": "dodo"
 								}
 							]
 						}
@@ -891,7 +917,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user_book_id\": \"60aec73dd3c1a505ac09ca0d\",\n    \"user_id\": \"60abaf774949b41fb4275d6c\",\n    \"user_password\": \"test\",\n    \"book_status\": \"Ongoing\",\n    \"book_progress\": 0.1\n}\n"
+							"raw": "{\n    \"user_book_id\": \"60b4d6eaaf1ed71b2c6fc801\",\n    \"user_id\": \"60ab807e2efa551a48982526\",\n    \"user_password\": \"test\",\n    \"book_status\": \"Finished\",\n    \"book_progress\": 1\n}\n"
 						},
 						"url": {
 							"raw": "https://localhost:9000/user-books/update",
