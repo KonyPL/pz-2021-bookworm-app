@@ -128,7 +128,7 @@ router.get('/book', async function(req, res, next) {
     let book = await readable_book([book_check])
     res.status(200).send(book[0])
   } else {
-    res.status(400).send("Review doesn't exist")
+    res.status(400).send("Book doesn't exist in user's library")
   }
 });
 
