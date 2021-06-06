@@ -9,10 +9,7 @@ var UserSchema = new Schema(
     user_login: {type: String, required: true, maxlength: 50, unique: true},
     user_password: {type: String, required: true, maxlength: 50},
     birth_date: {type: Date, required: false},
-    user_role: {type: String, enum: ['User', 'Moderator', 'Administrator'], required: true},
-    finished_books: {type: Number, required: true, default: 0, min: 0},
-    planned_books: {type: Number, required: true, default: 0, min: 0},
-    current_books: {type: Number, required: true, default: 0, min: 0}
+    user_role: {type: String, enum: ['User', 'Moderator', 'Administrator'], required: true}
   }
 );
 

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Book = require('../models/book')
 var Genre = require('../models/genre')
-
+var UserBook = require('../models/userBook')
 //Test books routing
 router.get('/', function(req, res, next) {
   res.status(200).send('Books routing');
@@ -59,6 +59,7 @@ router.patch('/update', async function(req, res, next) {
 
 // DELETE BOOK
 router.delete('/delete', async function(req, res, next) {
+  let user_book_check = await UserBook.deleteMany({book_id: req.body.book_id});
   let book_check = await Book.deleteOne({_id: req.body.book_id});
   if (book_check.deletedCount == 1){
     return res.status(200).send("Book deleted") 
