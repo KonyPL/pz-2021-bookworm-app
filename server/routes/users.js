@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user')
+var UserBook = require('../models/userBook')
+var Book = require('../models/book')
+var Genre = require('../models/genre')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -96,19 +99,101 @@ router.get('/list', async function(req, res, next) {
   res.status(200).send(tabela);
 });
 
+async function calc_fav_genre(user){
+  let genres = [];
+  let user_books = await UserBook.find({user_id: user._id, book_status: 'Finished'})
+  for(var i = 0; i < user_books.length; i++){
+    let book = await Book.findOne({_id: user_books[i].book_id})
+    if(book){
+      let genre = await Genre.findOne({_id: book.book_genre})
+      if(genre){
+        var exists = false;
+        for(var j = 0; j < genres.length; j++){
+          if(genres[j][0] == genre._id){
+            exists = true;
+            genres[j][1]+=1;
+            break;
+          }
+        }
+        if(!exists){
+          genres.push([genre._id, 1])
+        }
+      }
+    } 
+  }
+  var favourite;
+  if(genres.length > 0){
+    var fav = [genres[0][0], genres[0][1]]
+    for(var i = 1; i < genres.length; i++){
+      if(genres[i][1]>fav[1]){
+        fav = [genres[i][0], genres[i][1]]
+      }
+    }
+    favourite = await Genre.findOne({_id: fav[0]})
+  } else {
+    favourite = "None"
+  }
+
+  return favourite.name
+}
+
+async function calc_fav_author(user){
+  let authors = [];
+  let user_books = await UserBook.find({user_id: user._id, book_status: 'Finished'})
+  for(var i = 0; i < user_books.length; i++){
+    let book = await Book.findOne({_id: user_books[i].book_id})
+    if(book){
+      var exists = false;
+      for(var j = 0; j < authors.length; j++){
+        if(authors[j][0] == book.book_author){
+          exists = true;
+          authors[j][1]+=1;
+          break;
+        }
+      }
+      if(!exists){
+        authors.push([book.book_author, 1])
+      }
+    
+    } 
+  }
+  var favourite;
+  if(authors.length > 0){
+    var fav = [authors[0][0], authors[0][1]]
+    for(var i = 1; i < authors.length; i++){
+      if(authors[i][1]>fav[1]){
+        fav = [authors[i][0], authors[i][1]]
+      }
+    }
+    favourite = fav[0]
+  } else {
+    favourite = "None"
+  }
+
+  return favourite
+}
+
 //GET USER
 router.get('/user', async function(req, res, next) {
   let user_check = await User.findOne({user_login: req.query.login});
   if(user_check){
+    let finished_books = await UserBook.count({user_id: user_check._id, book_status: 'Finished'})
+    let planned_books = await UserBook.count({user_id: user_check._id, book_status: 'Planned'})
+    let ongoing_books = await UserBook.count({user_id: user_check._id, book_status: 'Ongoing'})
+    let favourite_genre = await calc_fav_genre(user_check)
+    let favourite_author = await calc_fav_author(user_check);
+    
     res.status(200).send({
       'user_login': user_check.user_login,
       'user_name': user_check.user_name,
       'user_surname': user_check.user_surname,
       'birth_date': user_check.birth_date,
       'user_role': user_check.user_role,
-      'finished_books': user_check.finished_books,
-      'planned_books': user_check.planned_books, 
-      'current_books': user_check.current_books})
+      'finished_books': finished_books,
+      'planned_books': planned_books, 
+      'ongoing_books': ongoing_books,
+      'favourite_genre': favourite_genre,
+      'favourite_author': favourite_author})
   } else {
     res.status(400).send("User doesn't exist")
   }
