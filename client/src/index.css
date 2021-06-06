@@ -189,6 +189,17 @@ code {
   border: 2px solid black;
 }
 
+.modal_content_reset {
+  background-color: white;
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  width: 40%;
+  padding: 20px;
+  border-radius: 5px;
+  border: 2px solid black;
+}
+
 .modalNewBook {
   background-color: white;
   position: absolute;

@@ -92,12 +92,20 @@ class Window extends React.Component {
 		this.clearUsersList = this.clearUsersList.bind(this);
 		this.getUsersList = this.getUsersList.bind(this);
 		this.removeUser = this.removeUser.bind(this);
+
+		this.handleClickDeleteReset = this.handleClickDeleteReset.bind(this);
 		this.resetUserPassword = this.resetUserPassword.bind(this);
+
 		this.promote = this.promote.bind(this);
 		this.updateProfile = this.updateProfilePopup.bind(this);
 		this.deleteAccount = this.showDeletePopup.bind(this);
+
 		this.handleChangeUpdateNamePopup = this.handleChangeUpdateNamePopup.bind(this);
 		this.handleChangeUpdateSurnamePopup = this.handleChangeUpdateSurnamePopup.bind(this);
+		this.handleChangeUpdateDateOfBirth = this.handleChangeUpdateDateOfBirth.bind(this);
+		this.handleChangeUpdateOldPassword = this.handleChangeUpdateOldPassword.bind(this);
+		this.handleChangeUpdateNewPassword = this.handleChangeUpdateNewPassword.bind(this);
+		
 		this.updateProfilePopup = this.updateProfilePopup.bind(this);
 		this.handleClickCloseUpdatePopup = this.handleClickCloseUpdatePopup.bind(this);
 		this.handleSubmitUpdatePopup = this.handleSubmitUpdatePopup.bind(this);
@@ -125,6 +133,8 @@ class Window extends React.Component {
 		this.userRemoveBook = this.userRemoveBook.bind(this);
 		this.userUpdateBook = this.userUpdateBook.bind(this);
 
+		this.filterBooksGenre = this.filterBooksGenre.bind(this);
+
 
 		this.state = { 
 			div1Shown: true, 
@@ -137,9 +147,10 @@ class Window extends React.Component {
 			username: '', 
 			password: '', 
 			user_id: '', 
+			dateOfBirth: '',
 
 			newBooksChosen: false,
-			categoriesChosen: false,
+			genresChosen: false,
 			authorsChosen: false,
 
 			statisticsChosen: false,
@@ -150,6 +161,9 @@ class Window extends React.Component {
 
 			libraryText: 'Library',
 			profileText: 'Profile',
+			
+			resetUserLogin: '',
+			resetUserPass: '',
 
 			newBooks: [
 				{
@@ -173,9 +187,12 @@ class Window extends React.Component {
 					yearReleased: 1997,
 				},
 			],
-			categories: [
+			genres: [
 				{
 					name: 'Romance',
+				},
+				{
+					name: 'Dramat'
 				},
 				{
 					name: 'Horror',
@@ -197,6 +214,9 @@ class Window extends React.Component {
 				},
 				{
 					name: 'Cooking'
+				},
+				{
+					name: 'Epopeja'
 				}
 			],
 			authors: [
@@ -248,6 +268,9 @@ class Window extends React.Component {
 
 			inputName: '',
 			inputSurname: '',
+			inputNewPassword: '',
+			inputOldPassword: '',
+			inputDateOfBirth: '',
 
 			books: [
 				{ 
@@ -455,11 +478,6 @@ class Window extends React.Component {
 					userName: data.user_login,
 					password: data.user_password,
 					user_id: data._id,
-					read: data.finished_books,
-					planned: data.planned_books,
-					ongoing: data.current_books,
-					name: data.user_name,
-					surName: data.user_surname,
 					role: data.user_role
 				});
 				that.clearUsersList()
@@ -477,6 +495,34 @@ class Window extends React.Component {
 				modeAccountCheckbox.checked = false;
 				type = ''
 			}
+		})
+		.then(function(){
+			const requestOptionsGet = {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+			};
+			fetch('https://localhost:9000/users/user?login=' + that.state.userName, requestOptionsGet)
+			.then(function(resp){
+				stat = resp.status
+				return resp.json()
+			})
+			.then(function(data){
+				if(stat == 200){
+					try{
+						that.setState({
+							dateOfBirth: data.birth_date.substring(0, 10),
+							name: data.user_name,
+							surName: data.user_surname,
+							read: data.finished_books,
+							planned: data.planned_books,
+							ongoing: data.current_books,
+						})
+					}
+					catch(err){
+
+					}
+				}
+			})
 		})
 		.then(function(){
 			that.clearAdminBooksList()
@@ -636,8 +682,13 @@ class Window extends React.Component {
 		that.getUsersList()
 	}
 
+	handleClickDeleteReset(){
+		document.getElementsByClassName('modalResetPass')[0].hidden = true;
+	}
+
 	resetUserPassword(username){
 		var that = this;
+		document.getElementsByClassName('modalResetPass')[0].hidden = false;
 
 		console.log("Reset hasla usera");
 
@@ -652,14 +703,19 @@ class Window extends React.Component {
 			stat = response.status;
 			console.log(stat)
 			if(stat == 200){
-				return response.body
+				return response.text()
 			}
 			else{
 				return ''
 			}
 		})
-		.then(function(response) { 
-			console.log(response)
+		.then(function(data) { 
+			if(stat == 200){
+				that.setState({
+					resetUserLogin: username,
+					resetUserPass: data,
+				})
+			}
 		})
 	}
 
@@ -690,8 +746,16 @@ class Window extends React.Component {
 	}
 
 	updateProfilePopup(){
-		console.log("Usuwanie konta")
+		var that = this;
+		console.log("Aktualizacja konta")
 		document.getElementsByClassName('modalUpdate')[0].hidden = false;
+		that.setState({
+			inputNewPassword: '',
+			inputOldPassword: '',
+			inputName: '',
+			inputSurname: '',
+			inputDateOfBirth: ''
+		})
 	}
 
 	handleClickCloseUpdatePopup() {
@@ -699,17 +763,18 @@ class Window extends React.Component {
 	};
 
 	handleSubmitUpdatePopup(event) {
-
 		var that = this;
 		var stat = 0;
 		const requestOptions = {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ _id: that.state.user_id, user_password: that.state.password, user_name: that.state.inputName, user_surname: that.state.inputSurname})
+			body: JSON.stringify({ _id: that.state.user_id, new_password: that.state.inputNewPassword, user_password: that.state.inputOldPassword, user_name: that.state.inputName, user_surname: that.state.inputSurname, birth_date: that.state.inputDateOfBirth})
 		};
 
 		fetch('https://localhost:9000/users/update', requestOptions)
 		.then(function(response) { 
+			console.log(that.state.user_id)
+			console.log(that.state.inputOldPassword)
 			stat = response.status;
 			console.log(stat)
 			if(stat == 200){
@@ -728,6 +793,18 @@ class Window extends React.Component {
 
 	handleChangeUpdateSurnamePopup(event) {
 		this.setState({ inputSurname: event.target.value });
+	}
+
+	handleChangeUpdateDateOfBirth(event) {
+		this.setState({ inputDateOfBirth: event.target.value });
+	}
+
+	handleChangeUpdateOldPassword(event) {
+		this.setState({ inputOldPassword: event.target.value });
+	}
+
+	handleChangeUpdateNewPassword(event) {
+		this.setState({ inputNewPassword: event.target.value });
 	}
 
 	showDeletePopup(){
@@ -791,7 +868,7 @@ class Window extends React.Component {
 		if(choice == 'user-stats'){
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: false,
 				statisticsChosen: true,
 				profileInfoChosen: false,
@@ -804,7 +881,7 @@ class Window extends React.Component {
 		else if(choice == 'user-info'){
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: false,
 				statisticsChosen: false,
 				profileInfoChosen: true,
@@ -817,7 +894,7 @@ class Window extends React.Component {
 		else if(choice == 'user-books'){
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: false,
 				statisticsChosen: false,
 				profileInfoChosen: false,
@@ -830,7 +907,7 @@ class Window extends React.Component {
 		else if(choice == 'user-reviews'){
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: false,
 				statisticsChosen: false,
 				profileInfoChosen: false,
@@ -843,7 +920,7 @@ class Window extends React.Component {
 		else{
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: false,
 				statisticsChosen: false,
 				profileInfoChosen: false,
@@ -859,9 +936,9 @@ class Window extends React.Component {
 	libraryChange(){
 		var that = this;
 		var choice = document.getElementsByClassName('dropdownLibrary')[0].value;
-		// console.log(document.getElementsByClassName('newBooksListDiv')[0])
-		// var newBooksDiv = document.getElementsByClassName('newBooksListDiv')[0];
-		// var categoriesDiv = document.getElementsByClassName('categoriesListDiv')[0];
+		// console.log(document.getElementsByClassName('titlesBooksListDiv')[0])
+		// var newBooksDiv = document.getElementsByClassName('titlesBooksListDiv')[0];
+		// var genresDiv = document.getElementsByClassName('genresListDiv')[0];
 		// var authorsDiv = document.getElementsByClassName('authorsListDiv')[0];
 		that.setState({
 			profilPage: false,
@@ -871,39 +948,39 @@ class Window extends React.Component {
 		if(choice == 'library-new-books'){
 			that.setState({
 				newBooksChosen: true,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: false,
 				statisticsChosen: false,
 				profileInfoChosen: false,
 				booksChosen: false,
 				reviewsChosen: false,
 				listChosen: false,
-				libraryText: 'New Books',
+				libraryText: 'Titles',
 			});
 			// newBooksDiv.hidden = 'false';
-			// categoriesDiv.hidden = 'true';
+			// genresDiv.hidden = 'true';
 			// authorsDiv.hidden = 'true';
 		}
-		else if(choice == 'library-categories'){
+		else if(choice == 'library-genres'){
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: true,
+				genresChosen: true,
 				authorsChosen: false,
 				statisticsChosen: false,
 				profileInfoChosen: false,
 				booksChosen: false,
 				reviewsChosen: false,
 				listChosen: false,	
-				libraryText: 'Categories',
+				libraryText: 'Genres',
 			});
 			// newBooksDiv.hidden = 'true';
-			// categoriesDiv.hidden = 'false';
+			// genresDiv.hidden = 'false';
 			// authorsDiv.hidden = 'true';
 		}
 		else{
 			that.setState({
 				newBooksChosen: false,
-				categoriesChosen: false,
+				genresChosen: false,
 				authorsChosen: true,
 				statisticsChosen: false,
 				profileInfoChosen: false,
@@ -913,7 +990,7 @@ class Window extends React.Component {
 				libraryText: 'Authors',
 			});
 			// newBooksDiv.hidden = 'true';
-			// categoriesDiv.hidden = 'true';
+			// genresDiv.hidden = 'true';
 			// authorsDiv.hidden = 'false';
 		}
 	}
@@ -1239,6 +1316,71 @@ class Window extends React.Component {
 				}
 			}
 		})
+	}
+
+	filterBooksGenre(genre){
+		var that = this;
+		console.log('Filtering with genre: ' + genre)
+
+		that.setState({
+			newBooksChosen: true,
+			genresChosen: false,
+			authorsChosen: false,
+			statisticsChosen: false,
+			profileInfoChosen: false,
+			booksChosen: false,
+			reviewsChosen: false,
+			listChosen: false,
+			libraryText: 'Titles',
+			newBooks: [],
+		});
+		var stat = 0;
+		var requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+		fetch('https://localhost:9000/books/list', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(function(data){
+			if(stat == 200){
+				for(var i = 0; i < data.length; i++){
+					var book = data[i];
+					var genreReceive;
+					var statusGenre;
+					var requestOptionsGenre = {
+						method: 'GET',
+						headers: { 'Content-Type': 'application/json' },
+					};
+					fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptions)
+					.then(function(genreResponse){
+						statusGenre = genreResponse.status;
+						return genreResponse.json()
+					})
+					.then(function(genreName){
+						if(statusGenre == 200){
+							if(genreName.name == genre){
+								var date = '';
+								try{
+									date = book.book_released
+								}
+								catch(error){
+									
+								}
+								if(date == ''){
+									date = 'No date yet';
+								}
+								that.setState({
+									newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre })
+								})
+							}
+						}
+					})
+				}
+			}
+		})
 
 	}
 
@@ -1262,8 +1404,9 @@ class Window extends React.Component {
 	}
 
 	render() {
-		const newBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.title} <br></br> Author: {d.author} <br></br> Released: {d.yearReleased} </button></li>);
-		const categoriesList = this.state.categories.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
+		// book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre 
+		const titlesBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Title: {d.book_name} <br></br> Author: {d.book_author} <br></br> Released: {d.book_released} <br></br> Rating: {d.book_rating} </button></li>);
+		const genresList = this.state.genres.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '400px', height: '400px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.filterBooksGenre(d.name)}> {d.name} </button></li>);
 		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='authorsButton' class='authorsButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> {d.name} </button></li>);
 		const booksList = this.state.userBooksList.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ marginLeft: '50px', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> 
 			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} </button></li>);
@@ -1342,8 +1485,8 @@ class Window extends React.Component {
 									<div class='topDropdown' style={{backgroundColor: '#b30000', width: '100%'}}>
 									<select class="dropdownLibrary" id="app-library" onChange={this.libraryChange}>
 										<option value="" disabled='true' selected>Library</option>
-										<option value="library-new-books">New books</option>
-										<option value="library-categories">Categories</option>
+										<option value="library-new-books">Titles</option>
+										<option value="library-genres">Genres</option>
 										<option value="library-authors">Authors</option>
 									</select>
 									<select class="dropdownUser" id="user-profile" onChange={this.userProfileChange}>
@@ -1388,13 +1531,34 @@ class Window extends React.Component {
 									<span className="close" onClick={this.handleClickCloseUpdatePopup}>
 										&times;
 									</span>
-										<h2 style={{textAlign: 'center'}}>Type in your Name and Surname to Update.</h2>
+										<h2 style={{textAlign: 'center'}}>Type in your data you want to update.</h2>
 										<div style={{ textAlign: 'center'}}>
 											<label>
-											<input type="text" name="name" onChange={this.handleChangeUpdateNamePopup} placeholder='Name' style={{ marginLeft: '20px', height: '30px', width: '300px'}}/>
+											<input type="text" name="name" onChange={this.handleChangeUpdateNamePopup} placeholder='Name' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
 											</label>
+											<br></br>
+											<br></br>
 											<label>
-											<input type="text" name="name" onChange={this.handleChangeUpdateSurnamePopup} placeholder='Surname' style={{ marginLeft: '20px', height: '30px', width: '300px'}}/>
+											<input type="text" name="name" onChange={this.handleChangeUpdateSurnamePopup} placeholder='Surname' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+											</label>
+											<br></br>
+											<br></br>
+											<label>
+											<input type="text" name="name" onChange={this.handleChangeUpdateDateOfBirth} placeholder='Date of birth (for example YYYY-MM-DD)' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+											</label>
+											<br></br>
+											<br></br>
+											<label>
+											<input type="text" name="name" onChange={this.handleChangeUpdateNewPassword} placeholder='New password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+											</label>
+											<br></br>
+											<br></br>
+											<h2 style={{ textAlign: 'center', fontSize: '30px' }}>
+												Type in current password to update user data.
+											</h2>
+											<br></br>
+											<label>
+											<input type="password" name="name" onChange={this.handleChangeUpdateOldPassword} placeholder='Current password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
 											</label>
 										</div>
 										<br />
@@ -1431,19 +1595,20 @@ class Window extends React.Component {
 												<div class='photo' style={{ marginLeft: '50px', backgroundImage: `url(${this.state.profilePhoto})`, width: '500px', height: '600px', display: 'inline-block'}}></div>	
 												<div class='infoText' style={{display: 'inline-block', marginLeft: '50px', textAlign: 'center'}}>
 													<br></br>
+													<br></br>
 													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Name: {this.state.name}</p>
 													<br></br>
 													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Surname: {this.state.surName}</p>
 													<br></br>
 													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Nick: {this.state.userName}</p>
 													<br></br>
-													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Sth else</p>
+													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Date of birth: {this.state.dateOfBirth}</p>
 													<br></br>
-													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Sth else 2</p>
 													<br></br>
-													<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Sth else 3</p>
+													<br></br>
 												</div>
 											</div>
+											<br></br>
 											<button class='userButton' id='userButton' onClick={this.updateProfilePopup}>Update Profile</button>
 											<button class='userButton' id='userButton' onClick={this.showDeletePopup}>Delete Account</button>
 
@@ -1498,8 +1663,8 @@ class Window extends React.Component {
 									<div class='topDropdown' style={{backgroundColor: '#b30000', width: '100%'}}>
 									<select class="dropdownLibrary" id="app-library" onChange={this.libraryChange}>
 										<option value="" disabled='true' selected>Library</option>
-										<option value="library-new-books">New books</option>
-										<option value="library-categories">Categories</option>
+										<option value="library-new-books">Titles</option>
+										<option value="library-genres">Genres</option>
 										<option value="library-authors">Authors</option>
 									</select>
 									<select class="dropdownUser" id="user-profile" onChange={this.userProfileChange}>
@@ -1523,21 +1688,21 @@ class Window extends React.Component {
 								<div class='toView'>
 									{/* <p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.libraryText]}</p> */}
 									<div style={{display: 'inline-block'}}>
-										<div class='newBooksListDiv' hidden={!this.state.newBooksChosen} style={{ position: 'absolute', top: '30%' }}>
-											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>New books</p>
-											<div class='newBooksListView' style={{overflowY: 'scroll', height: '600px'}}>
-												{newBooksList}
+										<div class='titlesBooksListDiv' hidden={!this.state.newBooksChosen} style={{ position: 'absolute', top: '30%' }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Titles</p>
+											<div class='titlesBooksListView' style={{ height: '600px'}}>
+												{titlesBooksList}
 											</div>
 										</div>
-										<div class='categoriesListDiv' hidden={!this.state.categoriesChosen} style={{ position: 'absolute', top: '30%' }}>
-											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Categories</p>
-											<div class='categoriesListView' style={{overflowY: 'scroll', height: '600px'}}>
-												{categoriesList}
+										<div class='genresListDiv' hidden={!this.state.genresChosen} style={{ position: 'absolute', top: '30%' }}>
+											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Genres</p>
+											<div class='genresListView' style={{ height: '600px'}}>
+												{genresList}
 											</div>
 										</div>
 										<div class='authorsListDiv' hidden={!this.state.authorsChosen} style={{ position: 'absolute', top: '30%' }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Authors</p>
-											<div class='authorsListView' style={{overflowY: 'scroll', height: '600px'}}>
+											<div class='authorsListView' style={{ height: '600px'}}>
 												{authorsList}
 											</div>
 										</div>
@@ -1566,7 +1731,7 @@ class Window extends React.Component {
 							<hr></hr>
 								<select class="dropdownAdmin" id="user-profile" style={{ display: 'inline-block', width: '100px' }}>
 									<option value="" disabled='true' selected>Filter</option>
-									<option value="user-list">Categories</option>
+									<option value="user-list">Genres</option>
 									<option value="user-stats">Authors</option>
 									<option value="user-info">Date released</option>
 									<option value="user-books">Date added</option>
@@ -1675,6 +1840,16 @@ class Window extends React.Component {
 							<h3 style={startPageHeader}>Moderator</h3>
 							{/* backgroundImage: `url(${background})` */}
 							<hr></hr>
+
+							<div className="modalResetPass" hidden='true'>
+								<div className="modal_content_reset">
+								<span className="close" onClick={this.handleClickDeleteReset}>
+									&times;
+								</span>
+									<h2 style={{textAlign: 'center'}}>{this.state.resetUserPass} for user: {this.state.resetUserLogin}.</h2>
+								</div>
+							</div>
+
 							<div id="pageAfterLogin" class="pageAfterLogin" style={{ display: 'flex', flexDirection: 'row', }}>
 
 								<div style={{width: '100%', marginLeft: '300px'}}>
