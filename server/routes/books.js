@@ -70,7 +70,21 @@ router.delete('/delete', async function(req, res, next) {
 
 // LIST BOOKS
 router.get('/list', async function(req, res, next) {
-  let all = await Book.find()
+  params= {};
+  if(req.query.author)
+    params.book_author = req.query.author;
+  if(req.query.genre){
+    let gen = await Genre.findOne({name: req.query.genre})
+    params.book_genre = gen._id;
+  }
+  if(req.query.name)
+    params.book_name = req.query.name;
+  if(req.query.release_date)
+    params.book_released = req.query.release_date;
+  if(req.query.rating)
+    params.book_rating = req.query.rating;
+
+  let all = await Book.find(params)
   res.status(200).send(all);
 });
 
