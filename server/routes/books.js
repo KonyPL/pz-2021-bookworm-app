@@ -15,6 +15,7 @@ router.post('/add', async function(req, res, next) {
   var book = new Book({
     book_name: req.body.book_name,
     book_author: req.body.book_author,
+    book_description: req.body.book_description,
     book_released: req.body.book_released,
     book_genre: req.body.book_genre
   })
@@ -36,6 +37,9 @@ router.patch('/update', async function(req, res, next) {
     }
     if(req.body.book_author){
       book_check.book_author = req.body.book_author;
+    }
+    if(req.body.book_description){
+      book_check.book_description = req.body.book_description;
     }
     if(req.body.book_released){
       book_check.book_released = req.body.book_released;
