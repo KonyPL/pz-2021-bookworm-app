@@ -159,8 +159,11 @@ class Window extends React.Component {
 		this.handleSubmitUpdateBook = this.handleSubmitUpdateBook.bind(this);
 
 		this.titleBookClicked = this.titleBookClicked.bind(this);
+		this.ongoingBookClicked = this.ongoingBookClicked.bind(this);
+		this.finishedBookClicked = this.finishedBookClicked.bind(this);
+		this.plannedBookClicked = this.plannedBookClicked.bind(this);
 
-		this.loadMyBooks = this.loadMyBooks(this);
+		this.loadMyBooks = this.loadMyBooks.bind(this);
 
 		this.state = { 
 			div1Shown: true, 
@@ -395,6 +398,10 @@ class Window extends React.Component {
 			updateBookGenre: '',
 			updateBookDescription: '',
 
+			listOngoing: [],
+			listFinished: [],
+			listPlanned: [],
+
 		};
 
 		var activeForUpdate = this;
@@ -620,7 +627,19 @@ class Window extends React.Component {
 					surName: '',
 					role: '',
 					username: '',
-					password: ''
+					password: '',
+					listOngoing: [],
+					listFinished: [],
+					listPlanned: [],
+					newBooksChosen: false,
+					genresChosen: false,
+					authorsChosen: false,
+					statisticsChosen: false,
+					profileInfoChosen: false,
+					booksChosen: false,
+					reviewsChosen: false,
+					listChosen: false,
+					profileText: '',
 				});
 			}
 		});
@@ -931,6 +950,7 @@ class Window extends React.Component {
 				listChosen: false,
 				profileText: 'My books',
 			});
+			that.loadMyBooks();
 		}
 		else if(choice == 'user-reviews'){
 			that.setState({
@@ -1641,7 +1661,7 @@ class Window extends React.Component {
 								method: 'GET',
 								headers: { 'Content-Type': 'application/json' },
 							};
-							await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptions)
+							await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
 							.then(function(genreResponse){
 								statusGenre = genreResponse.status;
 								return genreResponse.json()
@@ -1706,11 +1726,28 @@ class Window extends React.Component {
 		})
 	}
 
-	userRemoveBook(){
+	userRemoveBook(id){
+		var that = this;
 
+		var status;
+		var requestOptions = {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ user_book_id: id, user_id: that.state.user_id, user_password: that.state.password })
+		};
+		fetch('https://localhost:9000/user-books/delete', requestOptions)
+		.then(function(response){
+			status = response.status;
+			return status;
+		})
+		.then(function(stat){
+			if(stat == 200){
+				that.loadMyBooks();
+			}
+		})
 	}
 
-	userUpdateBook(){
+	userUpdateBook(id){
 
 	}
 
@@ -1723,22 +1760,173 @@ class Window extends React.Component {
 	}
 
 	loadMyBooks(){
-		var that = this
+		var that = this;
+		console.log('Loading user books')
+
+		that.setState({
+			listOngoing: [],
+			listFinished: [],
+			listPlanned: [],
+		})
+		var stat = 0;
+		var requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+		fetch('https://localhost:9000/user-books/list?user_login=' + that.state.username, requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(async function(data){
+			if(stat == 200){
+				for(var i = 0; i < data.length; i++){
+					var status;
+					var current_book_status = data[i].book_status;
+					var requestOptionsBook = {
+						method: 'GET',
+						headers: { 'Content-Type': 'application/json' },
+					};
+					await fetch('https://localhost:9000/books/book?id=' + data[i].book_id, requestOptionsBook)
+					.then(function(response){
+						status = response.status;
+						return response.json()
+					})
+					.then(async function(receivedBook){
+						if(status == 200){
+							var book = receivedBook;
+							var date = '';
+							var genre;
+							try{
+								date = book.book_released.substring(0, 10)
+							}
+							catch(error){
+								
+							}
+							if(date == ''){
+								date = 'No date yet';
+							}
+							if(book.book_genre){
+								var statusGenre;
+								var requestOptionsGenre = {
+									method: 'GET',
+									headers: { 'Content-Type': 'application/json' },
+								};
+								await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
+								.then(function(genreResponse){
+									statusGenre = genreResponse.status;
+									return genreResponse.json()
+								})
+								.then(function(genreName){
+									if(statusGenre == 200){
+										genre = genreName.name;
+										if(current_book_status == 'Ongoing'){
+											that.setState({
+												listOngoing: that.state.listOngoing.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+											})
+										}
+										else if(current_book_status == 'Finished'){
+											that.setState({
+												listFinished: that.state.listFinished.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+											})
+										}
+										else{
+											that.setState({
+												listPlanned: that.state.listPlanned.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+											})
+										}
+									}
+								})
+							}
+							else{
+								if(current_book_status == 'Ongoing'){
+									that.setState({
+										listOngoing: that.state.listOngoing.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+									})
+								}
+								else if(current_book_status == 'Finished'){
+									that.setState({
+										listFinished: that.state.listFinished.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+									})
+								}
+								else{
+									that.setState({
+										listPlanned: that.state.listPlanned.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+									})
+								}
+							}
+						}
+					})
+				}
+			}
+		})
+	}
+
+	ongoingBookClicked(name){
+		console.log('Ongoing')
+		document.getElementsByClassName(name + '-spec-ongoing')[0].hidden = !document.getElementsByClassName(name + '-spec-ongoing')[0].hidden;
+		document.getElementsByClassName(name + '-update-ongoing')[0].hidden = !document.getElementsByClassName(name + '-update-ongoing')[0].hidden;
+		document.getElementsByClassName(name + '-remove-ongoing')[0].hidden = !document.getElementsByClassName(name + '-remove-ongoing')[0].hidden;
+	}
+
+	finishedBookClicked(name){
+		console.log('Finished')
+		document.getElementsByClassName(name + '-spec-finished')[0].hidden = !document.getElementsByClassName(name + '-spec-finished')[0].hidden;
+		document.getElementsByClassName(name + '-update-finished')[0].hidden = !document.getElementsByClassName(name + '-update-finished')[0].hidden;
+		document.getElementsByClassName(name + '-remove-finished')[0].hidden = !document.getElementsByClassName(name + '-remove-finished')[0].hidden;
+	}
+
+	plannedBookClicked(name){
+		console.log('Planned')
+		document.getElementsByClassName(name + '-spec-planned')[0].hidden = !document.getElementsByClassName(name + '-spec-planned')[0].hidden;
+		document.getElementsByClassName(name + '-update-planned')[0].hidden = !document.getElementsByClassName(name + '-update-planned')[0].hidden;
+		document.getElementsByClassName(name + '-remove-planned')[0].hidden = !document.getElementsByClassName(name + '-remove-planned')[0].hidden;
 	}
 
 	render() {
 		// book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre 
 		const titlesBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='categoryButton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.titleBookClicked(d.book_name)}> 
 		<p class={d.book_name + '-spec'}> <br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Rating: {d.book_rating} <br></br><br></br> Genre: {d.book_genre} <br></br> </p> <p style={{ fontSize: '20px'}} class={d.book_name + '-description'} hidden='true'> Description: {d.book_description} </p> 
+		<br></br>
 		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-ongoing'} hidden='true' onClick={() => this.userAddBook('Ongoing', d.book_id, d.book_name)}>Add book to ongoing</button>
-		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-read'} hidden='true' onClick={() => this.userAddBook('Read', d.book_id, d.book_name)}>Add book to read</button>
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-read'} hidden='true' onClick={() => this.userAddBook('Finished', d.book_id, d.book_name)}>Add book to read</button>
+		<br></br>
 		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-planned'} hidden='true' onClick={() => this.userAddBook('Planned', d.book_id, d.book_name)}>Add book to planned</button>
 		</button></li>);
+
 		const genresList = this.state.genres.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top', }} key={d.name}><button id='categoryButton' class='categoryButton' style={{display: 'inline-block', width: '400px', height: '200px', cursor: 'pointer', fontSize: '35px', verticalAlign: 'top', }} onClick={() => this.filterBooksGenre(d.name)}> {d.name} </button> <div style={{ fontSize: '20px', color: 'white', width: '400px', height: '600px' }}> {d.description} </div></li>);
 		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.author_name}><button id='authorsButton' class='authorsButton' style={{display: 'inline-block', width: '400px', height: '200px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.filterAuthors(d.author_name)}> {d.author_name} </button></li>);
+
 		const booksList = this.state.userBooksList.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ marginLeft: '50px', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> 
-			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} </button></li>);
-		const plannedList = this.state.list.map((d) => <li style={{display: 'inline-block'}} key={d.name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> Name: {d.name} <br></br> Author: {d.author} <br></br> Released: {d.released} </button></li>);
+			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} 
+		</button></li>);
+
+		const ongoingList = this.state.listOngoing.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.ongoingBookClicked(d.book_name)}> 
+		<p class={d.book_name + '-spec-ongoing'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Progress: {d.book_progress} </p> 
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-ongoing userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-ongoing userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
+		<br></br>
+		</button></li>);
+		const finishedList = this.state.listFinished.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.finishedBookClicked(d.book_name)}> 
+		<p class={d.book_name + '-spec-finished'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} </p> 
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-finished userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-finished userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
+		<br></br>
+		</button></li>);
+		const plannedList = this.state.listPlanned.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.plannedBookClicked(d.book_name)}> 
+		<p class={d.book_name + '-spec-planned'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} </p> 
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-planned userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-planned userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
+		<br></br>
+		</button></li>);
+
 		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> <br></br>
 			<br></br> Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} <br></br><br></br> Role: {d.usRole} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.resetUserPassword(d.userName)}>Reset Password</button>
@@ -1747,6 +1935,7 @@ class Window extends React.Component {
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Administrator', d.userName)}>Promote User to Administrator</button>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Moderator', d.userName)}>Promote User to Moderator</button>
 		</div></li>);
+
 		const booksListAdmin = this.state.adminBooksList.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} ><br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br>  Genre: {d.book_genre} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeBook(d.book_id)}>Remove Book</button>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.updateBook(d.book_id, d.book_genre)}>Update Book</button>
@@ -1823,7 +2012,7 @@ class Window extends React.Component {
 										<option value="user-info">Profile info</option>
 										<option value="user-books">My books</option>
 										<option value="user-reviews">My reviews</option>
-										<option value="user-list">My list</option>
+										{/* <option value="user-list">My list</option> */}
 									</select>
 									</div>
 									<div id="search-box">
@@ -1941,12 +2130,26 @@ class Window extends React.Component {
 											<button class='userButton' id='userButton' onClick={this.showDeletePopup}>Delete Account</button>
 
 										</div>
-										<div class='userBooksDiv' hidden={!this.state.booksChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }} onClick={this.loadMyBooks}>
+										<div class='userBooksDiv' hidden={!this.state.booksChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My books</p>
-											<div class='userBooksList'>
-												{booksList}
+											<hr></hr>
+											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '20px'}}>Ongoing</p>
+											<hr></hr>
+											<div style={{ marginLeft: '50px',}}>
+												{ongoingList}
 											</div>
-
+											<hr></hr>
+											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '20px'}}>Finished</p>
+											<hr></hr>
+											<div style={{ marginLeft: '50px',}}>
+												{finishedList}
+											</div>
+											<hr></hr>
+											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '20px'}}>Planned</p>
+											<hr></hr>
+											<div style={{ marginLeft: '50px',}}>
+												{plannedList}
+											</div>
 										</div>
 										<div class='userReviewsDiv' hidden={!this.state.reviewsChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My reviews</p>
@@ -1962,13 +2165,26 @@ class Window extends React.Component {
 											</div>
 
 										</div>
-										<div class='userListDiv' hidden={!this.state.listChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
-											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My list</p>
+										{/* <div class='userListDiv' hidden={!this.state.listChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
+											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Ongoing</p>
+											<hr></hr>
+											<div>
+												{ongoingList}
+											</div>
+											<hr></hr>
+											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Finished</p>
+											<hr></hr>
+											<div>
+												{finishedList}
+											</div>
+											<hr></hr>
+											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Planned</p>
+											<hr></hr>
 											<div>
 												{plannedList}
 											</div>
 
-										</div>
+										</div> */}
 									</div>
 								</div>
 							</div>
@@ -2001,7 +2217,7 @@ class Window extends React.Component {
 										<option value="user-info">Profile info</option>
 										<option value="user-books">My books</option>
 										<option value="user-reviews">My reviews</option>
-										<option value="user-list">My list</option>
+										{/* <option value="user-list">My list</option> */}
 									</select>
 									</div>
 									<div id="search-box">

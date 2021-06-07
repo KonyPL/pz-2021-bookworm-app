@@ -250,3 +250,15 @@ code {
   background-color: black;
   color: white;
 }
+
+.userBookButton{
+  font-size: 20px;
+  color: white;
+  background-color: #ff8080;
+  cursor: pointer;
+}
+
+.userBookButton:hover{
+  background-color: red;
+  color: white;
+}
