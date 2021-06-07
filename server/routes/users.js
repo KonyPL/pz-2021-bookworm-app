@@ -72,7 +72,11 @@ router.post('/logout', async function(req, res, next) {
 
 // DELETE USER
 router.delete('/delete', async function(req, res, next) {
-  let user_check = await User.deleteOne({ _id: req.body._id, user_password: req.body.user_password});
+  let user_check = await User.findOne({ _id: req.body._id, user_password: req.body.user_password});
+  if(user_check){
+    await UserBook.deleteMany({user_id: user_check._id})
+  }
+  user_check = await User.deleteOne({ _id: req.body._id, user_password: req.body.user_password});
   if (user_check.deletedCount == 1){
     return res.status(200).send("User deleted") 
   } else {

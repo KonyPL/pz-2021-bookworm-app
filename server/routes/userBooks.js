@@ -83,12 +83,16 @@ async function readable_book(json_table){
   var table = []
   for (var index in json_table){
     let user_check = await User.findOne({_id: json_table[index].user_id});
+    try{
     table.push({
       'user_login': user_check.user_login,
       'user_book_id': json_table[index]._id,
       'book_id': json_table[index].book_id, 
       'book_status': json_table[index].book_status, 
       'book_progress': json_table[index].book_progress})
+    } catch(e){
+      console.log(e)
+    }
   }
   return table
 }
