@@ -1723,7 +1723,7 @@ class Window extends React.Component {
 	}
 
 	loadMyBooks(){
-
+		var that = this
 	}
 
 	render() {
