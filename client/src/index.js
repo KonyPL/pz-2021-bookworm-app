@@ -158,6 +158,10 @@ class Window extends React.Component {
 		this.handleChangeUpdateBookDescription = this.handleChangeUpdateBookDescription.bind(this);
 		this.handleSubmitUpdateBook = this.handleSubmitUpdateBook.bind(this);
 
+		this.titleBookClicked = this.titleBookClicked.bind(this);
+
+		this.loadMyBooks = this.loadMyBooks(this);
+
 		this.state = { 
 			div1Shown: true, 
 			userPage: false,
@@ -1025,13 +1029,13 @@ class Window extends React.Component {
 							.then(function(genreName){
 								genre = genreName.name
 								that.setState({
-									newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre })
+									newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre, book_description: book.book_description })
 								})
 							})
 						}
 						else{
 							that.setState({
-								newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '' })
+								newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
 							})
 						}
 					}
@@ -1188,6 +1192,18 @@ class Window extends React.Component {
 		this.setState({ newBookAuthor: event.target.value });
 	}
 
+	// handleChangeNewBookGenre(event){
+	// 	this.setState({ newBookName: event.target.value });
+	// }
+
+	// handleChangeNewBookDescription(event){
+	// 	this.setState({ newBookAuthor: event.target.value });
+	// }
+
+	// handleChangeNewBookDate(event){
+	// 	this.setState({ newBookName: event.target.value });
+	// }
+
 	handleSubmitNewBook(){
 		var mod = document.getElementsByClassName('modalNewBook')[0];
 		var that = this;
@@ -1196,7 +1212,8 @@ class Window extends React.Component {
 		const requestOptions = {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ book_name: that.state.newBookName, book_author: that.state.newBookAuthor})
+			// body: JSON.stringify({ book_id: that.state.newBookId, book_released: that.state.newBookDate, book_genre: that.state.newBookGenre, book_description: that.state.newBookDescription })
+			body: JSON.stringify({ book_name: that.state.newBookName, book_author: that.state.newBookAuthor, })
 		};
 
 		fetch('https://localhost:9000/books/add', requestOptions)
@@ -1311,15 +1328,14 @@ class Window extends React.Component {
 							catch(error){
 
 							}
-							console.log(book)
 							that.setState({
-								adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre })
+								adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre, book_description: book.book_description })
 							})
 						})
 					}
 					else{
 						that.setState({
-							adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '' })
+							adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
 						})
 					}
 				}
@@ -1402,8 +1418,8 @@ class Window extends React.Component {
 						const requestOptions = {
 							method: 'PATCH',
 							headers: { 'Content-Type': 'application/json' },
-							// body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: that.state.updateBookGenre, book_description: that.state.updateBookDescription })
-							body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: genres[i]._id })
+							body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: that.state.genres[i]._id, book_description: that.state.updateBookDescription })
+							// body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: genres[i]._id })
 						};
 						fetch('https://localhost:9000/books/update', requestOptions)
 						.then(function(response) { 
@@ -1492,13 +1508,13 @@ class Window extends React.Component {
 								.then(function(genre){
 									var genreName = genre.name
 									that.setState({
-										userBooksList: that.state.userBooksList.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genreName, book_progress: entry.book_progress, book_status: entry.book_status, book_id: book._id })
+										userBooksList: that.state.userBooksList.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genreName, book_progress: entry.book_progress, book_status: entry.book_status, book_id: book._id, book_description: book.book_description })
 									})
 								})
 							}
 							else{
 								that.setState({
-									adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '' })
+									adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
 								})
 							}
 							
@@ -1567,7 +1583,7 @@ class Window extends React.Component {
 					.then(function(genreName){
 						if(genreName.name == genre){
 							that.setState({
-								newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id })
+								newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description })
 							})
 						}
 					})
@@ -1634,14 +1650,14 @@ class Window extends React.Component {
 								if(statusGenre == 200){
 									genre = genreName.name;
 									that.setState({
-										newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id })
+										newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description })
 									})
 								}
 							})
 						}
 						else{
 							that.setState({
-								newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id })
+								newBooks: that.state.newBooks.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description })
 							})
 						}
 					}
@@ -1658,8 +1674,36 @@ class Window extends React.Component {
 		})
 	}
 
-	userAddBook(){
-
+	userAddBook(status, id, name){
+		var progress;
+		var that = this;
+		if(status == 'Read'){
+			progress = 100;
+		}
+		else{
+			progress = 0;
+		}
+		var status;
+		var requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ book_id: id, user_id: that.state.user_id, user_password: that.state.password, book_status: status, book_progress: progress })
+		};
+		fetch('https://localhost:9000/user-books/add', requestOptions)
+		.then(function(response){
+			status = response.status;
+			return status;
+		})
+		.then(function(stat){
+			console.log(stat)
+			if(stat == 201){
+				document.getElementsByClassName(name + '-spec')[0].hidden = !document.getElementsByClassName(name + '-spec')[0].hidden;
+				document.getElementsByClassName(name + '-description')[0].hidden = !document.getElementsByClassName(name + '-description')[0].hidden;
+				document.getElementsByClassName(name + '-ongoing')[0].hidden = !document.getElementsByClassName(name + '-ongoing')[0].hidden;
+				document.getElementsByClassName(name + '-read')[0].hidden = !document.getElementsByClassName(name + '-read')[0].hidden;
+				document.getElementsByClassName(name + '-planned')[0].hidden = !document.getElementsByClassName(name + '-planned')[0].hidden;
+			}
+		})
 	}
 
 	userRemoveBook(){
@@ -1670,12 +1714,27 @@ class Window extends React.Component {
 
 	}
 
+	titleBookClicked(name){
+		document.getElementsByClassName(name + '-spec')[0].hidden = !document.getElementsByClassName(name + '-spec')[0].hidden;
+		document.getElementsByClassName(name + '-description')[0].hidden = !document.getElementsByClassName(name + '-description')[0].hidden;
+		document.getElementsByClassName(name + '-ongoing')[0].hidden = !document.getElementsByClassName(name + '-ongoing')[0].hidden;
+		document.getElementsByClassName(name + '-read')[0].hidden = !document.getElementsByClassName(name + '-read')[0].hidden;
+		document.getElementsByClassName(name + '-planned')[0].hidden = !document.getElementsByClassName(name + '-planned')[0].hidden;
+	}
+
+	loadMyBooks(){
+
+	}
+
 	render() {
 		// book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre 
-		const titlesBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> <br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Rating: {d.book_rating} <br></br><br></br> Genre: {d.book_genre} <br></br> </button>
-		
-		</li>);
-		const genresList = this.state.genres.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top', }} key={d.name}><button id='categoryBbutton' class='categoryButton' style={{display: 'inline-block', width: '400px', height: '200px', cursor: 'pointer', fontSize: '35px', verticalAlign: 'top', }} onClick={() => this.filterBooksGenre(d.name)}> {d.name} </button> <div style={{ fontSize: '20px', color: 'white', width: '400px', height: '600px' }}> {d.description} </div></li>);
+		const titlesBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='categoryButton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.titleBookClicked(d.book_name)}> 
+		<p class={d.book_name + '-spec'}> <br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Rating: {d.book_rating} <br></br><br></br> Genre: {d.book_genre} <br></br> </p> <p style={{ fontSize: '20px'}} class={d.book_name + '-description'} hidden='true'> Description: {d.book_description} </p> 
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-ongoing'} hidden='true' onClick={() => this.userAddBook('Ongoing', d.book_id, d.book_name)}>Add book to ongoing</button>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-read'} hidden='true' onClick={() => this.userAddBook('Read', d.book_id, d.book_name)}>Add book to read</button>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-planned'} hidden='true' onClick={() => this.userAddBook('Planned', d.book_id, d.book_name)}>Add book to planned</button>
+		</button></li>);
+		const genresList = this.state.genres.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top', }} key={d.name}><button id='categoryButton' class='categoryButton' style={{display: 'inline-block', width: '400px', height: '200px', cursor: 'pointer', fontSize: '35px', verticalAlign: 'top', }} onClick={() => this.filterBooksGenre(d.name)}> {d.name} </button> <div style={{ fontSize: '20px', color: 'white', width: '400px', height: '600px' }}> {d.description} </div></li>);
 		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.author_name}><button id='authorsButton' class='authorsButton' style={{display: 'inline-block', width: '400px', height: '200px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.filterAuthors(d.author_name)}> {d.author_name} </button></li>);
 		const booksList = this.state.userBooksList.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ marginLeft: '50px', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> 
 			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} </button></li>);
@@ -1882,7 +1941,7 @@ class Window extends React.Component {
 											<button class='userButton' id='userButton' onClick={this.showDeletePopup}>Delete Account</button>
 
 										</div>
-										<div class='userBooksDiv' hidden={!this.state.booksChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
+										<div class='userBooksDiv' hidden={!this.state.booksChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }} onClick={this.loadMyBooks}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My books</p>
 											<div class='userBooksList'>
 												{booksList}
@@ -2093,7 +2152,7 @@ class Window extends React.Component {
 									</div>
 									<br></br>
 									<div style={{ textAlign: 'center'}}> 
-										<input type="text" name="name" onChange={this.handleChangeUpdateBookDescription} placeholder='Description' style={{ display: 'block', height: '30px', width: '800px'}}/>
+										<input type="text" name="name" onChange={this.handleChangeUpdateBookDescription} placeholder='Description' style={{ display: 'block', height: '90px', width: '800px'}}/>
 									</div>
 									<br></br>
 									<div style={{ textAlign: 'center'}}> 
