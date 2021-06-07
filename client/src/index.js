@@ -163,6 +163,13 @@ class Window extends React.Component {
 		this.finishedBookClicked = this.finishedBookClicked.bind(this);
 		this.plannedBookClicked = this.plannedBookClicked.bind(this);
 
+		this.handleClickCloseUpdateUserBookPopup = this.handleClickCloseUpdateUserBookPopup.bind(this);
+		this.handleChangeUpdateBookStatus = this.handleChangeUpdateBookStatus.bind(this);
+		this.handleChangeUpdateBookProgress = this.handleChangeUpdateBookProgress.bind(this);
+		this.handleChangeUpdateUpdateBookPassword = this.handleChangeUpdateUpdateBookPassword.bind(this);
+		this.handleSubmitUpdateBookPopup = this.handleSubmitUpdateBookPopup.bind(this);
+		
+
 		this.loadMyBooks = this.loadMyBooks.bind(this);
 
 		this.state = { 
@@ -288,9 +295,9 @@ class Window extends React.Component {
 			profilePhoto: profilePhotoSource,
 			role: '',
 
-			read: 1,
-			planned: 10,
-			ongoing: 1,
+			read: 0,
+			planned: 0,
+			ongoing: 0,
 			reviews: 0,
 			favGenre: 'Science Fiction',
 			favAuthor: 'Stanislaw Lem',
@@ -401,6 +408,11 @@ class Window extends React.Component {
 			listOngoing: [],
 			listFinished: [],
 			listPlanned: [],
+
+			inputUpdateBookStatus: '',
+			inputUpdateBookProgress: '',
+			inputUpdateBookPassword: '',
+			bookToUpdateId: 0,
 
 		};
 
@@ -548,14 +560,16 @@ class Window extends React.Component {
 							dateOfBirth: data.birth_date.substring(0, 10),
 							name: data.user_name,
 							surName: data.user_surname,
-							read: data.finished_books,
-							planned: data.planned_books,
-							ongoing: data.current_books,
 						})
 					}
 					catch(err){
 
 					}
+					that.setState({
+						read: data.finished_books,
+						planned: data.planned_books,
+						ongoing: data.ongoing_books,
+					})
 				}
 			})
 		})
@@ -1748,7 +1762,56 @@ class Window extends React.Component {
 	}
 
 	userUpdateBook(id){
+		var that = this;
+		that.setState({
+			bookToUpdateId: id,
+		})
+		document.getElementsByClassName('modalUpdateUserBook')[0].hidden = false;
+	}
 
+	handleClickCloseUpdateUserBookPopup(){
+		document.getElementsByClassName('modalUpdateUserBook')[0].hidden = true;
+	}
+
+	handleChangeUpdateBookStatus(event){
+		this.setState({ inputUpdateBookStatus: event.target.value })
+	}
+
+	handleChangeUpdateBookProgress(event){
+		this.setState({ inputUpdateBookProgress: event.target.value })
+	}
+	
+	handleChangeUpdateUpdateBookPassword(event){
+		this.setState({ inputUpdateBookPassword: event.target.value })
+	}
+	
+	handleSubmitUpdateBookPopup(){
+		var that = this;
+		console.log('Update book')
+
+		console.log(that.state.bookToUpdateId)
+		console.log(that.state.user_id)
+		console.log(that.state.inputUpdateBookPassword)
+		console.log(that.state.inputUpdateBookStatus)
+		console.log(that.state.inputUpdateBookProgress)
+
+		var stat = 0;
+		var requestOptions = {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ user_book_id: that.state.bookToUpdateId, user_id: that.state.user_id, user_password: that.state.inputUpdateBookPassword, book_status: that.state.inputUpdateBookStatus, book_progress: that.state.inputUpdateBookProgress })
+		};
+		fetch('https://localhost:9000/user-books/update', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(function(data){
+			if(stat == 200){
+				document.getElementsByClassName('modalUpdateUserBook')[0].hidden = true;
+				that.loadMyBooks();
+			}
+		})
 	}
 
 	titleBookClicked(name){
@@ -2022,8 +2085,10 @@ class Window extends React.Component {
 
 								
 							</div>
+
 							<hr></hr>
 							<div style={{ display: 'block', backgroundColor: '#b30000', height: '100%'}}>
+
 								<div className="modalDelete" hidden='true'>
 									<div className="modal_content">
 									<span className="close" onClick={this.handleClickDeletePopup}>
@@ -2088,6 +2153,7 @@ class Window extends React.Component {
 								<div class='toView'>
 									{/* <p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.libraryText]}</p> */}
 									<div style={{display: 'inline-block'}}>
+
 										<div class='userStatsDiv' hidden={!this.state.statisticsChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My statistics</p>
 											<div class='statsText' style={{display: 'inline-block', width: '100%', textAlign: 'center'}}>
@@ -2164,6 +2230,35 @@ class Window extends React.Component {
 												<br></br>
 											</div>
 
+										</div>
+										
+										<div className="modalUpdateUserBook" hidden='true'>
+											<div className="modal_content">
+												<span className="close" onClick={this.handleClickCloseUpdateUserBookPopup}>
+													&times;
+												</span>
+												<h2 style={{textAlign: 'center'}}>Type in new status or progress and your password to update selected book.</h2>
+												<div style={{ textAlign: 'center'}}>
+													<label>
+													<input type="text" name="name" onChange={this.handleChangeUpdateBookStatus} placeholder='Status' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+													<label>
+													<input type="text" name="name" onChange={this.handleChangeUpdateBookProgress} placeholder='Progress' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+													<br></br>
+													<label>
+													<input type="password" name="name" onChange={this.handleChangeUpdateUpdateBookPassword} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+												</div>
+												<br />
+												<div style={{ textAlign: 'center'}}> 
+													<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBookPopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
+												</div>
+											</div>
 										</div>
 										{/* <div class='userListDiv' hidden={!this.state.listChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
 											<p style={{ marginLeft: '50px', textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>Ongoing</p>
