@@ -168,6 +168,8 @@ class Window extends React.Component {
 		this.handleChangeUpdateBookProgress = this.handleChangeUpdateBookProgress.bind(this);
 		this.handleChangeUpdateUpdateBookPassword = this.handleChangeUpdateUpdateBookPassword.bind(this);
 		this.handleSubmitUpdateBookPopup = this.handleSubmitUpdateBookPopup.bind(this);
+		this.userRateBook = this.userRateBook.bind(this);
+		this.userReviewBook = this.userReviewBook.bind(this);
 		
 
 		this.loadMyBooks = this.loadMyBooks.bind(this);
@@ -1814,6 +1816,14 @@ class Window extends React.Component {
 		})
 	}
 
+	userRateBook(id){
+
+	}
+
+	userReviewBook(id){
+		
+	}
+
 	titleBookClicked(name){
 		document.getElementsByClassName(name + '-spec')[0].hidden = !document.getElementsByClassName(name + '-spec')[0].hidden;
 		document.getElementsByClassName(name + '-description')[0].hidden = !document.getElementsByClassName(name + '-description')[0].hidden;
@@ -1937,6 +1947,8 @@ class Window extends React.Component {
 		document.getElementsByClassName(name + '-spec-finished')[0].hidden = !document.getElementsByClassName(name + '-spec-finished')[0].hidden;
 		document.getElementsByClassName(name + '-update-finished')[0].hidden = !document.getElementsByClassName(name + '-update-finished')[0].hidden;
 		document.getElementsByClassName(name + '-remove-finished')[0].hidden = !document.getElementsByClassName(name + '-remove-finished')[0].hidden;
+		document.getElementsByClassName(name + '-rate-finished')[0].hidden = !document.getElementsByClassName(name + '-rate-finished')[0].hidden;
+		document.getElementsByClassName(name + '-review-finished')[0].hidden = !document.getElementsByClassName(name + '-review-finished')[0].hidden;
 	}
 
 	plannedBookClicked(name){
@@ -1979,6 +1991,10 @@ class Window extends React.Component {
 		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-finished userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
 		<br></br>
 		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-finished userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-rate-finished userBookButton'} hidden='true' onClick={() => this.userRateBook(d.user_book_id)}>Rate book</button>
+		<br></br>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-review-finished userBookButton'} hidden='true' onClick={() => this.userReviewBook(d.user_book_id)}>Review book</button>
 		<br></br>
 		</button></li>);
 		const plannedList = this.state.listPlanned.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.plannedBookClicked(d.book_name)}> 
@@ -2231,7 +2247,7 @@ class Window extends React.Component {
 											</div>
 
 										</div>
-										
+
 										<div className="modalUpdateUserBook" hidden='true'>
 											<div className="modal_content">
 												<span className="close" onClick={this.handleClickCloseUpdateUserBookPopup}>
