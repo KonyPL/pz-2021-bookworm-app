@@ -8,6 +8,8 @@ import profilePhotoSource from "./images/noprofile.jpg";
 import solaris from "./images/solaris.jpg";
 import { isCompositeComponent } from 'react-dom/test-utils';
 import 'select-pure';
+import StarRatings from './react-star-ratings';
+
 
 const startPageHeader = {
 	margin: 0,
