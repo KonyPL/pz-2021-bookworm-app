@@ -244,6 +244,17 @@ code {
   /* border: 2px solid black; */
 }
 
+.modalRateUserBook{
+  /* background-color: white; */
+  position: absolute;
+  top: 35%;
+  left: 28%;
+  width: 80%;
+  padding: 20px;
+  border-radius: 5px;
+  /* border: 2px solid black; */
+}
+
 .close {
   color: Black;
   float: right;
@@ -272,4 +283,15 @@ code {
 .userBookButton:hover{
   background-color: red;
   color: white;
+}
+
+.star {
+  color: #ff9933;
+  cursor: pointer;
+  font-size: 50px;
+}
+
+.star:hover {
+  color: #ff9933;
+  cursor: pointer;
 }

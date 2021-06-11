@@ -8,7 +8,45 @@ import profilePhotoSource from "./images/noprofile.jpg";
 import solaris from "./images/solaris.jpg";
 import { isCompositeComponent } from 'react-dom/test-utils';
 import 'select-pure';
-import StarRatings from './react-star-ratings';
+
+var activeForUpdate;
+var rate = 0;
+
+const Star = ({ marked, starId }) => {
+	return (
+	  <span data-star-id={starId} className="star" role="button">
+		{marked ? '\u2605' : '\u2606'}
+	  </span>
+	);
+  };
+  
+const StarRating = ({ value }) => {
+	const [rating, setRating] = React.useState(parseInt(value) || 0);
+	const [selection, setSelection] = React.useState(0);
+  
+	const hoverOver = event => {
+	  let val = 0;
+	  if (event && event.target && event.target.getAttribute('data-star-id'))
+		val = event.target.getAttribute('data-star-id');
+	  setSelection(val);
+	};
+	return (
+	  <div
+		onMouseOut={() => hoverOver(null)}
+		onClick={e => { setRating(e.target.getAttribute('data-star-id') || rating); rate = e.target.getAttribute('data-star-id')}}
+		onMouseOver={hoverOver}
+	  >
+		{Array.from({ length: 5 }, (v, i) => (
+		  <Star
+			starId={i + 1}
+			key={`star_${i + 1}`}
+			marked={selection ? selection >= i + 1 : rating >= i + 1}
+		  />
+		))}
+	  </div>
+	);
+};
+
 
 
 const startPageHeader = {
@@ -90,8 +128,6 @@ async function getGenre(id){
 	})
 }
 
-var activeForUpdate;
-
 class Window extends React.Component {
 	constructor(props) {
 		super(props);
@@ -169,10 +205,19 @@ class Window extends React.Component {
 		this.handleClickCloseUpdateUserBookPopup = this.handleClickCloseUpdateUserBookPopup.bind(this);
 		this.handleChangeUpdateBookStatus = this.handleChangeUpdateBookStatus.bind(this);
 		this.handleChangeUpdateBookProgress = this.handleChangeUpdateBookProgress.bind(this);
-		this.handleChangeUpdateUpdateBookPassword = this.handleChangeUpdateUpdateBookPassword.bind(this);
+		this.handleChangeUpdateBookPassword = this.handleChangeUpdateBookPassword.bind(this);
 		this.handleSubmitUpdateBookPopup = this.handleSubmitUpdateBookPopup.bind(this);
+
 		this.userRateBook = this.userRateBook.bind(this);
+		this.handleClickCloseRateUserBookPopup = this.handleClickCloseRateUserBookPopup.bind(this);
+		this.handleChangeRateBookContent = this.handleChangeRateBookContent.bind(this);
+		this.handleChangeRateBookRating = this.handleChangeRateBookRating.bind(this);
+		this.handleSubmitRateBookPopup = this.handleSubmitRateBookPopup.bind(this);
+
+
 		this.userReviewBook = this.userReviewBook.bind(this);
+
+
 		
 
 		this.loadMyBooks = this.loadMyBooks.bind(this);
@@ -418,6 +463,11 @@ class Window extends React.Component {
 			inputUpdateBookProgress: '',
 			inputUpdateBookPassword: '',
 			bookToUpdateId: 0,
+
+			ratingBookId: 0,
+			ratingBookValue: 0,
+			ratingBookContent: '',
+			rateStatusText: '',
 
 		};
 
@@ -1786,7 +1836,7 @@ class Window extends React.Component {
 		this.setState({ inputUpdateBookProgress: event.target.value })
 	}
 	
-	handleChangeUpdateUpdateBookPassword(event){
+	handleChangeUpdateBookPassword(event){
 		this.setState({ inputUpdateBookPassword: event.target.value })
 	}
 	
@@ -1820,11 +1870,62 @@ class Window extends React.Component {
 	}
 
 	userRateBook(id){
-
+		var that = this;
+		that.setState({
+			ratingBookId: id,
+		})
+		document.getElementsByClassName('modalRateUserBook')[0].hidden = false;
 	}
 
 	userReviewBook(id){
 		
+	}
+
+	handleClickCloseRateUserBookPopup(){
+		document.getElementsByClassName('modalRateUserBook')[0].hidden = true;
+		console.log(rate)
+	}
+
+	handleChangeRateBookRating(event){
+	}
+
+	handleChangeRateBookContent(event){
+		this.setState({ ratingBookContent: event.target.value })
+	}
+	
+	handleSubmitRateBookPopup(){
+		var that = this;
+		console.log('Rate book')
+
+		console.log(that.state.ratingBookId)
+		console.log(that.state.user_id)
+		console.log(that.state.password)
+		console.log(that.state.ratingBookContent)
+		console.log(rate)
+
+		var stat = 0;
+		var requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ book_id: that.state.ratingBookId, user_id: that.state.user_id, user_password: that.state.password, review_rating: rate, review_content: that.state.ratingBookContent })
+		};
+		fetch('https://localhost:9000/reviews/add', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(function(data){
+			if(stat == 201){
+				document.getElementsByClassName('modalRateUserBook')[0].hidden = true;
+				that.loadMyBooks();
+				rate = 0;
+			}
+			else if(stat == 405){
+				that.setState({
+					rateStatusText: 'Book already has review.',
+				})
+			}
+		})
 	}
 
 	titleBookClicked(name){
@@ -1951,7 +2052,7 @@ class Window extends React.Component {
 		document.getElementsByClassName(name + '-update-finished')[0].hidden = !document.getElementsByClassName(name + '-update-finished')[0].hidden;
 		document.getElementsByClassName(name + '-remove-finished')[0].hidden = !document.getElementsByClassName(name + '-remove-finished')[0].hidden;
 		document.getElementsByClassName(name + '-rate-finished')[0].hidden = !document.getElementsByClassName(name + '-rate-finished')[0].hidden;
-		document.getElementsByClassName(name + '-review-finished')[0].hidden = !document.getElementsByClassName(name + '-review-finished')[0].hidden;
+		// document.getElementsByClassName(name + '-review-finished')[0].hidden = !document.getElementsByClassName(name + '-review-finished')[0].hidden;
 	}
 
 	plannedBookClicked(name){
@@ -1995,10 +2096,10 @@ class Window extends React.Component {
 		<br></br>
 		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-finished userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
 		<br></br>
-		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-rate-finished userBookButton'} hidden='true' onClick={() => this.userRateBook(d.user_book_id)}>Rate book</button>
+		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-rate-finished userBookButton'} hidden='true' onClick={() => this.userRateBook(d.user_book_id)}>Add review</button>
 		<br></br>
-		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-review-finished userBookButton'} hidden='true' onClick={() => this.userReviewBook(d.user_book_id)}>Review book</button>
-		<br></br>
+		{/* <button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-review-finished userBookButton'} hidden='true' onClick={() => this.userReviewBook(d.user_book_id)}>Review book</button>
+		<br></br> */}
 		</button></li>);
 		const plannedList = this.state.listPlanned.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.plannedBookClicked(d.book_name)}> 
 		<p class={d.book_name + '-spec-planned'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} </p> 
@@ -2270,12 +2371,36 @@ class Window extends React.Component {
 													<br></br>
 													<br></br>
 													<label>
-													<input type="password" name="name" onChange={this.handleChangeUpdateUpdateBookPassword} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													<input type="password" name="name" onChange={this.handleChangeUpdateBookPassword} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
 													</label>
 												</div>
 												<br />
 												<div style={{ textAlign: 'center'}}> 
 													<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBookPopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
+												</div>
+											</div>
+										</div>
+
+										<div className="modalRateUserBook" hidden='true'>
+											<div className="modal_content">
+												<span className="close" onClick={this.handleClickCloseRateUserBookPopup}>
+													&times;
+												</span>
+												<h2 style={{textAlign: 'center'}}>Choose rate of selected book.</h2>
+												<h2 style={{textAlign: 'center'}}>{this.rateStatusText}</h2>
+												<div style={{ textAlign: 'center'}}>
+
+												<StarRating value={3}/>
+
+													<label>
+														<input type="text" name="name" onChange={this.handleChangeRateBookContent} placeholder='Review content' style={{ marginLeft: '20px', height: '90px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+												</div>
+												<br />
+												<div style={{ textAlign: 'center'}}> 
+													<button id="submitButton" class="submitButton" onClick={this.handleSubmitRateBookPopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
 												</div>
 											</div>
 										</div>
