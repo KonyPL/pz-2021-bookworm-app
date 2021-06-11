@@ -461,7 +461,7 @@ class Window extends React.Component {
 			listPlanned: [],
 
 			inputUpdateBookStatus: '',
-			inputUpdateBookProgress: '',
+			inputUpdateBookProgress: 1,
 			inputUpdateBookPassword: '',
 			bookToUpdateId: 0,
 
@@ -1850,6 +1850,7 @@ class Window extends React.Component {
 
 	handleChangeUpdateBookProgress(event){
 		this.setState({ inputUpdateBookProgress: event.target.value })
+		console.log(this.state.inputUpdateBookProgress)
 	}
 	
 	handleChangeUpdateBookPassword(event){
@@ -1881,6 +1882,9 @@ class Window extends React.Component {
 			if(stat == 200){
 				document.getElementsByClassName('modalUpdateUserBook')[0].hidden = true;
 				that.loadMyBooks();
+				that.state({
+					inputUpdateBookProgress: 1,
+				})
 			}
 		})
 	}
@@ -2094,11 +2098,11 @@ class Window extends React.Component {
 		const authorsList = this.state.authors.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.author_name}><button id='authorsButton' class='authorsButton' style={{display: 'inline-block', width: '400px', height: '200px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.filterAuthors(d.author_name)}> {d.author_name} </button></li>);
 
 		const booksList = this.state.userBooksList.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ marginLeft: '50px', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> 
-			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} 
+			Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Status: {d.book_status} <br></br><br></br> Progress: {d.book_progress} %
 		</button></li>);
 
 		const ongoingList = this.state.listOngoing.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.ongoingBookClicked(d.book_name)}> 
-		<p class={d.book_name + '-spec-ongoing'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Progress: {d.book_progress} </p> 
+		<p class={d.book_name + '-spec-ongoing'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Progress: {d.book_progress} % </p> 
 		<br></br>
 		<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-ongoing userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
 		<br></br>
@@ -2373,15 +2377,20 @@ class Window extends React.Component {
 												<span className="close" onClick={this.handleClickCloseUpdateUserBookPopup}>
 													&times;
 												</span>
-												<h2 style={{textAlign: 'center'}}>Type in new status or progress and your password to update selected book.</h2>
+												<h2 style={{textAlign: 'center'}}>Choose new status, update progress and type in your password to update selected book.</h2>
 												<div style={{ textAlign: 'center'}}>
-													<label>
-													<input type="text" name="name" onChange={this.handleChangeUpdateBookStatus} placeholder='Status' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-													</label>
+													<select class="dropdownUserStatus" id="app-library" style={{ marginLeft: '20px', height: '40px', width: '500px'}} onChange={this.handleChangeUpdateBookStatus}>
+														<option value="" disabled='true' selected>Status</option>
+														<option value="Ongoing">Ongoing</option>
+														<option value="Finished">Finished</option>
+														<option value="Planned">Planned</option>
+													</select>
 													<br></br>
 													<br></br>
+													<p style={{ marginLeft: '20px', height: '30px', width: '500px'}}>Progress: {this.state.inputUpdateBookProgress} %</p>
+													<br></br>
 													<label>
-													<input type="text" name="name" onChange={this.handleChangeUpdateBookProgress} placeholder='Progress' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													<input type="range" min="1" max="100" defaultValue="1" onChange={this.handleChangeUpdateBookProgress} style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
 													</label>
 													<br></br>
 													<br></br>
