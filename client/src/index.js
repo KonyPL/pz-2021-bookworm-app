@@ -8,6 +8,7 @@ import profilePhotoSource from "./images/noprofile.jpg";
 import solaris from "./images/solaris.jpg";
 import { isCompositeComponent } from 'react-dom/test-utils';
 import 'select-pure';
+// import SelectPure from './selectPure';
 
 var activeForUpdate;
 var rate = 0;
@@ -584,6 +585,21 @@ class Window extends React.Component {
 				});
 				that.clearUsersList()
 				that.getUsersList()
+
+				var myOptions = [];
+				myOptions.push({label: "Wszyscy", value: "Wszyscy"});
+
+				for(var i = 0; i < that.state.users.length; i++){
+					myOptions.push({label: that.state.users[i].userName, value: that.state.users[i].userName});
+				}
+
+				// new SelectPure(".user-select-pure", {
+				// 	options: myOptions,
+				// 	multiple: true,
+				// 	autocomplete: true,
+				// 	icon: "fa fa-times",
+				// 	value: ["Wszyscy"],
+				// });
 			}
 			else{
 				that.setState({
@@ -2646,6 +2662,7 @@ class Window extends React.Component {
 								<div style={{width: '100%', marginLeft: '300px'}}>
 									<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" />
 									<button style={{display: 'inline-block'}} id="searchButton" class='searchButton'>Search User</button>
+									{/* <span id="filter" class="user-select-pure">Select Pure</span> */}
 								</div>
 								
 
