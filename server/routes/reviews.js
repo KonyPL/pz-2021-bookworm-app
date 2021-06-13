@@ -106,12 +106,21 @@ async function readable_review(json_table){
   var table = []
   for (var index in json_table){
     let user_check = await User.findOne({_id: json_table[index].user_id});
-    table.push({
-      'user_login': user_check.user_login,
-      'review_id': json_table[index]._id,
-      'book_id': json_table[index].book_id, 
-      'review_rating': json_table[index].review_rating, 
-      'review_content': json_table[index].review_content})
+    if(user_check){
+      table.push({
+        'user_login': user_check.user_login,
+        'review_id': json_table[index]._id,
+        'book_id': json_table[index].book_id, 
+        'review_rating': json_table[index].review_rating, 
+        'review_content': json_table[index].review_content})
+    } else {
+      table.push({
+        'user_login': "User deleted",
+        'review_id': json_table[index]._id,
+        'book_id': json_table[index].book_id, 
+        'review_rating': json_table[index].review_rating, 
+        'review_content': json_table[index].review_content})
+    }
   }
   return table
 }
