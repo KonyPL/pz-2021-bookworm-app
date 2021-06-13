@@ -8,6 +8,7 @@ import profilePhotoSource from "./images/noprofile.jpg";
 import solaris from "./images/solaris.jpg";
 import { isCompositeComponent } from 'react-dom/test-utils';
 import 'select-pure';
+import { search } from '../../server/routes/books';
 // import SelectPure from './selectPure';
 
 var activeForUpdate;
@@ -921,12 +922,62 @@ class Window extends React.Component {
 		that.setState({search: e.target.value});
 		that.clearUserBooksList();
 		var filter = document.getElementsByClassName('dropdownLibrary');
-		for(var i = 0; i < that.state.userBooksList.length; i++){
-			console.log(that.state.userBooksList[i].book_name.includes(that.state.search))
-			console.log(that.state.userBooksList[i].book_name)
-			if(!that.state.userBooksList[i].book_name.includes(that.state.search)){
-				that.state.userBooksList.splice(i, 1)
-			}
+		if(filter == 'library-new-books'){
+			var stat = 0;
+			const requestOptions = {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+			};
+
+			fetch('https://localhost:9000/books/list?name=' + search, requestOptions)
+			.then(function(response){
+				stat = response.status;
+				that.setState({
+					newBooks: [],
+				})
+				return response.json();
+			})
+			.then(async function(data){
+				if(stat == 200){
+					for(var i = 0; i < data.length; i++){
+						var book = data[i];
+						try{
+							date = book.book_released.substring(0, 10)
+						}
+						catch(error){
+
+						}
+						if(date == ''){
+							date = 'No date yet'
+						}
+						if(book.book_genre){
+							var date;
+							var genre;
+							var statusGenre;
+							var requestOptionsGenre = {
+								method: 'GET',
+								headers: { 'Content-Type': 'application/json' },
+							};
+							await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
+							.then(function(genreResponse){
+								statusGenre = genreResponse.status;
+								return genreResponse.json()
+							})
+							.then(function(genreName){
+								genre = genreName.name
+								that.setState({
+									newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre, book_description: book.book_description })
+								})
+							})
+						}
+						else{
+							that.setState({
+								newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
+							})
+						}
+					}
+				}
+			})
 		}
 	}
 
