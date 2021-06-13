@@ -916,7 +916,18 @@ class Window extends React.Component {
 	}
 
 	handleSearchChange(e) {
-		this.setState({search: e.target.value});
+		// this.setState({search: e.target.value});
+		var that = this;
+		that.setState({search: e.target.value});
+		that.clearUserBooksList();
+		var filter = document.getElementsByClassName('dropdownLibrary');
+		for(var i = 0; i < that.state.userBooksList.length; i++){
+			console.log(that.state.userBooksList[i].book_name.includes(that.state.search))
+			console.log(that.state.userBooksList[i].book_name)
+			if(!that.state.userBooksList[i].book_name.includes(that.state.search)){
+				that.state.userBooksList.splice(i, 1)
+			}
+		}
 	}
 
 	userProfileChange(){
@@ -1325,6 +1336,9 @@ class Window extends React.Component {
 	getAdminBooksList(){
 		var that = this;
 		var stat = 0;
+		var date;
+		var genre;
+		var statusGenre;
 		const requestOptions = {
 			method: 'GET',
 			headers: { 'Content-Type': 'application/json' },
@@ -1333,36 +1347,42 @@ class Window extends React.Component {
 		fetch('https://localhost:9000/books/list', requestOptions)
 		.then(function(response) { 
 			stat = response.status;
-			var receivedBooks = response.json();
-			return receivedBooks;
+			return response.json();
 		})
 		.then(async function(receivedBooks){
 			if(stat == 200){
 				for(var i = 0; i < receivedBooks.length; i++){
 					var book = receivedBooks[i];
-					var date;
-					var genre;
-					var statusGenre;
-					var requestOptionsGenre = {
-						method: 'GET',
-						headers: { 'Content-Type': 'application/json' },
-					};
-					if(book.book_genre){
+					console.log(book)
+					if(book.book_id){
+						var requestOptionsGenre = {
+							method: 'GET',
+							headers: { 'Content-Type': 'application/json' },
+						};
 						await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
 						.then(function(genreResponse){
 							statusGenre = genreResponse.status;
 							return genreResponse.json()
 						})
-						.then(function(genreName){
-							genre = genreName.name
+						.then(function(genreReceived){
+							if(stat == 200){
+								genre = genreReceived;
+							}
+							return genre;
+						})
+						.then(function(genre){
+							var genreName = genre.name
 							try{
 								date = book.book_released.substring(0, 10)
 							}
 							catch(error){
 
 							}
+							if(date == ''){
+								date = 'No date yet';
+							}
 							that.setState({
-								adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre, book_description: book.book_description })
+								adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genreName, book_description: book.book_description })
 							})
 						})
 					}
@@ -1373,7 +1393,6 @@ class Window extends React.Component {
 					}
 				}
 			}
-			return receivedBooks;
 		})
 	}
 
@@ -1530,7 +1549,6 @@ class Window extends React.Component {
 									return response.json()
 								})
 								.then(function(genreReceived){
-									console.log(genreReceived)
 									if(stat == 200){
 										genre = genreReceived;
 									}
@@ -1545,7 +1563,7 @@ class Window extends React.Component {
 							}
 							else{
 								that.setState({
-									adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
+									userBooksList: that.state.userBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
 								})
 							}
 							
