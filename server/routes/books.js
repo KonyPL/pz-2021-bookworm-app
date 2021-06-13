@@ -3,6 +3,7 @@ var router = express.Router();
 var Book = require('../models/book')
 var Genre = require('../models/genre')
 var UserBook = require('../models/userBook')
+var Review = require('../models/review')
 //Test books routing
 router.get('/', function(req, res, next) {
   res.status(200).send('Books routing');
@@ -72,6 +73,32 @@ router.delete('/delete', async function(req, res, next) {
   }
 });
 
+async function calculate_rating(json_table){
+  var table = []
+  for (var index in json_table){
+    let reviews = await Review.find({book_id: json_table[index]._id});
+    var book = {
+      _id: json_table[index]._id,
+      book_name: json_table[index].book_name,
+      book_author: json_table[index].book_author,
+      book_released: json_table[index].book_released,
+      book_description: json_table[index].book_description,
+      book_genre: json_table[index].book_genre
+    }
+    var rating = 0, ratings = 0;
+    if(reviews.length > 0){
+      for(var rev in reviews){
+        rating += reviews[rev].review_rating;
+        ratings++;
+      }
+      rating = Math.round(rating / ratings);
+    }
+    book.book_rating = rating;
+    table.push(book)
+  }
+  return table
+}
+
 // LIST BOOKS
 router.get('/list', async function(req, res, next) {
   params= {};
@@ -89,14 +116,16 @@ router.get('/list', async function(req, res, next) {
     params.book_rating = req.query.rating;
 
   let all = await Book.find(params)
-  res.status(200).send(all);
+  var ratedBooks = await calculate_rating(all)
+  res.status(200).send(ratedBooks);
 });
 
 //GET BOOK
 router.get('/book', async function(req, res, next) {
-  let book_check = await Book.findOne({_id: req.query.id});
+  let book_check = await Book.findById(req.query.id);
   if(book_check){
-    res.status(200).send(book_check)
+    var ratedBook = await calculate_rating([book_check])
+    res.status(200).send(ratedBook[0])
   } else {
     res.status(400).send("This book doesn't exist in database")
   }
