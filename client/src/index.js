@@ -12,6 +12,7 @@ import 'select-pure';
 
 var activeForUpdate;
 var rate = 0;
+var toUpdateReview;
 
 const Star = ({ marked, starId }) => {
 	return (
@@ -47,8 +48,6 @@ const StarRating = ({ value }) => {
 	  </div>
 	);
 };
-
-
 
 const startPageHeader = {
 	margin: 0,
@@ -218,10 +217,23 @@ class Window extends React.Component {
 
 		this.userReviewBook = this.userReviewBook.bind(this);
 
-
+		this.clearUserReviews = this.clearUserReviews.bind(this);
+		this.getUserReviews = this.getUserReviews.bind(this);
 		
 
 		this.loadMyBooks = this.loadMyBooks.bind(this);
+
+		this.userUpdateReview = this.userUpdateReview.bind(this);
+		this.userRemoveReview = this.userRemoveReview.bind(this);
+		this.reviewClicked = this.reviewClicked.bind(this);
+
+		this.handleClickCloseUpdateRateUserBookPopup = this.handleClickCloseUpdateRateUserBookPopup.bind(this);
+
+		this.handleClickCloseUserReviewsPopup = this.handleClickCloseUserReviewsPopup.bind(this);
+		this.showUserReviews = this.showUserReviews.bind(this);
+		this.removeUserReview = this.removeUserReview.bind(this);
+		this.userReviewClicked = this.userReviewClicked.bind(this);
+		this.clearUserReviewsList = this.clearUserReviewsList.bind(this);
 
 		this.state = { 
 			div1Shown: true, 
@@ -252,85 +264,11 @@ class Window extends React.Component {
 			resetUserLogin: '',
 			resetUserPass: '',
 
-			newBooks: [
-				{
-					title: 'Krzyzacy',
-					author: 'Henryk Sienkiewicz',
-					yearReleased: 1990,
-				},
-				{
-					title: 'Lalka',
-					author: 'Boleslaw Prus',
-					yearReleased: 1994,
-				},
-				{
-					title: 'Solaris',
-					author: 'Stanislaw Lem',
-					yearReleased: 1996,
-				},
-				{
-					title: 'Niezwyciezony',
-					author: 'Stanislaw Lem',
-					yearReleased: 1997,
-				},
-			],
-			genres: [
-				{
-					name: 'Romance',
-				},
-				{
-					name: 'Dramat'
-				},
-				{
-					name: 'Horror',
-				},
-				{
-					name: 'Thriller',
-				},
-				{
-					name: 'Fantasy',
-				},
-				{
-					name: 'Science Fiction'
-				},
-				{
-					name: 'Mystery'
-				},
-				{
-					name: 'Western'
-				},
-				{
-					name: 'Cooking'
-				},
-				{
-					name: 'Epopeja'
-				}
-			],
-			authors: [
-				{
-					name: 'Stanislaw Lem',
-				},
-				{
-					name: 'Boleslaw Prus',
-				},
-				{
-					name: 'Adam Mickiewicz',
-				},
-				{
-					name: 'Juliusz Slowacki',
-				},
-				{
-					name: 'Henryk Sienkiewicz',
-				},
-			],
-
-			adminBooksList: [
-
-			],
-
-			userBooksList: [
-
-			],
+			newBooks: [],
+			genres: [],
+			authors: [],
+			adminBooksList: [],
+			userBooksList: [],
 
 			search: '',
 			
@@ -359,89 +297,11 @@ class Window extends React.Component {
 			inputOldPassword: '',
 			inputDateOfBirth: '',
 
-			books: [
-				{ 
-					name: 'Solaris',
-					author: 'Stanislaw Lem',
-					released: 1996,
-				},
-			],
-
-			// reviews: [
-			// 	{
-			// 		book: 'Solaris',
-			// 		rating: 5,
-			// 		content: 'Solaris was an amazing book! I recommend it to everyone.',
-			// 		date: '7th May 2021',
-			// 	},
-			// ],
-
-
-			list: [
-				{ 
-					name: 'Niezwyciezony',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Nieulekly',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Nienazwany',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Nienasycony',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Niedokonany',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Niewiadomy',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Niewidzacy',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Nieprawy',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Nielewy',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-				{ 
-					name: 'Nieskonczony',
-					author: 'Stanislaw Lem',
-					released: 1994,
-				},
-			],
-
-			users: [
-				{
-					userName: 'Dodomonitor2',
-					name: 'Dominik',
-					surName: 'Tomkiewicz',
-				},
-				{
-					userName: 'Dodomonitor',
-					name: 'Tomek',
-					surName: 'Tomczykiewicz',
-				},
-			],
+			books: [],
+			reviews: 0,
+			list: [],
+			users: [],
+			reviewsList: [],
 
 			newBookName: '',
 			newBookAuthor: '',
@@ -469,6 +329,12 @@ class Window extends React.Component {
 			ratingBookValue: 0,
 			ratingBookContent: '',
 			rateStatusText: '',
+
+			reviewsEx: [{ review_id: 1, book_name: 'Test'}],
+
+			updateReviewId: 0,
+
+			userReviewsList: [],
 
 		};
 
@@ -581,7 +447,7 @@ class Window extends React.Component {
 					userName: data.user_login,
 					password: data.user_password,
 					user_id: data._id,
-					role: data.user_role
+					role: data.user_role,
 				});
 				that.clearUsersList()
 				that.getUsersList()
@@ -631,6 +497,9 @@ class Window extends React.Component {
 							dateOfBirth: data.birth_date.substring(0, 10),
 							name: data.user_name,
 							surName: data.user_surname,
+							userName: data.user_login,
+							favGenre: data.favourite_genre,
+							favAuthor: data.favourite_author
 						})
 					}
 					catch(err){
@@ -651,6 +520,66 @@ class Window extends React.Component {
 		.then(function(){
 			that.clearUserBooksList()
 			that.getUserBooksList()
+		})
+		.then(function(){
+			that.clearUserReviews()
+			that.getUserReviews()
+		})
+	}
+
+	clearUserReviews(){
+		var that = this;
+		that.setState({
+			reviewsList: [],
+		})
+	}
+
+	getUserReviews(){
+		var that = this;
+		var stat = 0;
+		const requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+
+		fetch('https://localhost:9000/reviews/list?user_login=' + that.state.userName, requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(async function(data){
+			if(stat == 200){
+				for(var i = 0; i < data.length; i++){
+					var book_nam = '';
+					var book_aut = '';
+					var review = data[i];
+					var status;
+					var requestOptionsBook = {
+						method: 'GET',
+						headers: { 'Content-Type': 'application/json' },
+					};
+					await fetch('https://localhost:9000/books/book?id=' + review.book_id, requestOptionsBook)
+					.then(function(answer){
+						status = answer.status;
+						return answer.json()
+					})
+					.then(async function(receivedBook){
+						if(status == 200){
+							var book = receivedBook;
+							book_nam = book.book_name;
+							book_aut = book.book_author;
+							that.setState({
+								reviewsList: that.state.reviewsList.concat({review_id: review.review_id, book_id: review.book_id, book_name: book_nam, book_author: book_aut, review_rating: review.review_rating, review_content: review.review_content })
+							});
+						}
+					})
+				}
+			}
+		})
+		.then(function(){
+			that.setState({
+				reviews: that.state.reviewsList.length,
+			})
 		})
 	}
 
@@ -733,7 +662,6 @@ class Window extends React.Component {
 	getUsersList(){
 		var that = this;
 
-		console.log("Aktualizacja userow");
 		that.clearUsersList();
 		var receivedUsers;
 		const requestOptions = {
@@ -1049,6 +977,8 @@ class Window extends React.Component {
 				listChosen: false,
 				profileText: 'My reviews',
 			});
+			that.clearUserReviews();
+			that.getUserReviews();
 		}
 		else{
 			that.setState({
@@ -1394,7 +1324,6 @@ class Window extends React.Component {
 
 	getAdminBooksList(){
 		var that = this;
-		console.log('Getting Books List for Admin')
 		var stat = 0;
 		const requestOptions = {
 			method: 'GET',
@@ -1409,7 +1338,6 @@ class Window extends React.Component {
 		})
 		.then(async function(receivedBooks){
 			if(stat == 200){
-				console.log(receivedBooks)
 				for(var i = 0; i < receivedBooks.length; i++){
 					var book = receivedBooks[i];
 					var date;
@@ -1545,7 +1473,6 @@ class Window extends React.Component {
 	}
 
 	getUserBooksList(){
-		console.log('Getting user books list')
 		var that = this;
 		var stat = 0;
 		var date;
@@ -1576,7 +1503,6 @@ class Window extends React.Component {
 							return response.json()
 						})
 						.then(function(bookReceived){
-							console.log(bookReceived)
 							if(stat == 200){
 								book = bookReceived;
 							}
@@ -1832,10 +1758,11 @@ class Window extends React.Component {
 		})
 	}
 
-	userUpdateBook(id){
+	userUpdateBook(id, progress){
 		var that = this;
 		that.setState({
 			bookToUpdateId: id,
+			inputUpdateBookProgress: progress,
 		})
 		document.getElementsByClassName('modalUpdateUserBook')[0].hidden = false;
 	}
@@ -1863,7 +1790,7 @@ class Window extends React.Component {
 
 		console.log(that.state.bookToUpdateId)
 		console.log(that.state.user_id)
-		console.log(that.state.inputUpdateBookPassword)
+		console.log(that.state.password)
 		console.log(that.state.inputUpdateBookStatus)
 		console.log(that.state.inputUpdateBookProgress)
 
@@ -1871,20 +1798,23 @@ class Window extends React.Component {
 		var requestOptions = {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ user_book_id: that.state.bookToUpdateId, user_id: that.state.user_id, user_password: that.state.inputUpdateBookPassword, book_status: that.state.inputUpdateBookStatus, book_progress: that.state.inputUpdateBookProgress })
+			body: JSON.stringify({ user_book_id: that.state.bookToUpdateId, user_id: that.state.user_id, user_password: that.state.password, book_status: that.state.inputUpdateBookStatus, book_progress: parseInt(that.state.inputUpdateBookProgress) / 100 })
 		};
 		fetch('https://localhost:9000/user-books/update', requestOptions)
 		.then(function(response) { 
 			stat = response.status;
 			return response.json()
 		})
-		.then(function(data){
+		.then(async function(data){
 			if(stat == 200){
 				document.getElementsByClassName('modalUpdateUserBook')[0].hidden = true;
 				that.loadMyBooks();
-				that.state({
+				that.setState({
 					inputUpdateBookProgress: 1,
 				})
+			}
+			else if(stat == 405){
+				
 			}
 		})
 	}
@@ -2019,17 +1949,17 @@ class Window extends React.Component {
 										genre = genreName.name;
 										if(current_book_status == 'Ongoing'){
 											that.setState({
-												listOngoing: that.state.listOngoing.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+												listOngoing: that.state.listOngoing.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: Math.round(data[i].book_progress * 10000) / 100 })
 											})
 										}
 										else if(current_book_status == 'Finished'){
 											that.setState({
-												listFinished: that.state.listFinished.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+												listFinished: that.state.listFinished.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: Math.round(data[i].book_progress * 10000) / 100 })
 											})
 										}
 										else{
 											that.setState({
-												listPlanned: that.state.listPlanned.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+												listPlanned: that.state.listPlanned.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: Math.round(data[i].book_progress * 10000) / 100 })
 											})
 										}
 									}
@@ -2038,17 +1968,17 @@ class Window extends React.Component {
 							else{
 								if(current_book_status == 'Ongoing'){
 									that.setState({
-										listOngoing: that.state.listOngoing.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+										listOngoing: that.state.listOngoing.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: Math.round(data[i].book_progress * 10000) / 100 })
 									})
 								}
 								else if(current_book_status == 'Finished'){
 									that.setState({
-										listFinished: that.state.listFinished.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+										listFinished: that.state.listFinished.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: Math.round(data[i].book_progress * 10000) / 100 })
 									})
 								}
 								else{
 									that.setState({
-										listPlanned: that.state.listPlanned.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: data[i].book_progress })
+										listPlanned: that.state.listPlanned.concat({ book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre, book_id: book._id, book_description: book.book_description, user_book_id: data[i].user_book_id, book_progress: Math.round(data[i].book_progress * 10000) / 100 })
 									})
 								}
 							}
@@ -2082,10 +2012,171 @@ class Window extends React.Component {
 		document.getElementsByClassName(name + '-remove-planned')[0].hidden = !document.getElementsByClassName(name + '-remove-planned')[0].hidden;
 	}
 
+	reviewClicked(review_id, book_id){
+		document.getElementsByClassName(review_id + '-update-review')[0].hidden = !document.getElementsByClassName(review_id + '-update-review')[0].hidden;
+		document.getElementsByClassName(review_id + '-remove-review')[0].hidden = !document.getElementsByClassName(review_id + '-remove-review')[0].hidden;
+	}
+
+	userRemoveReview(review_id, book_id){
+		var that = this;
+		var stat = 0;
+		var requestOptions = {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ user_id: that.state.user_id, user_password: that.state.password, review_id: review_id })
+		};
+		fetch('https://localhost:9000/reviews/delete', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(async function(data){
+			if(stat == 200){
+				document.getElementsByClassName(review_id + '-update-review')[0].hidden = true;
+				document.getElementsByClassName(review_id + '-remove-review')[0].hidden = true;
+			}
+		})
+		.then(function(){
+			that.clearUserReviews();
+			that.getUserReviews();
+		})
+	}
+
+	userUpdateReview(review_id, book_id){
+		var that = this;
+		toUpdateReview = that;
+		console.log(that);
+		that.setState({
+			ratingBookId: book_id,
+			updateReviewId: review_id,
+		})
+		document.getElementsByClassName('modalUpdateRateUserBook')[0].hidden = false;
+	}
+
+	handleClickCloseUpdateRateUserBookPopup(){
+		document.getElementsByClassName('modalUpdateRateUserBook')[0].hidden = true;
+	}
+
+	handleSubmitUpdateRateBookPopup(){
+		var that = toUpdateReview;
+		console.log('Update rate')
+
+		var stat = 0;
+		var requestOptions = {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ review_id: that.state.updateReviewId, user_id: that.state.user_id, user_password: that.state.password, review_rating: parseInt(rate), review_content: that.state.ratingBookContent })
+		};
+		fetch('https://localhost:9000/reviews/update', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(function(data){
+			if(stat == 200){
+				document.getElementsByClassName('modalUpdateRateUserBook')[0].hidden = true;
+				document.getElementsByClassName(that.state.updateReviewId + '-update-review')[0].hidden = true;
+				document.getElementsByClassName(that.state.updateReviewId + '-remove-review')[0].hidden = true;
+				rate = 0;
+			}
+		})
+		.then(function(){
+			that.clearUserReviews();
+			that.getUserReviews();
+		})
+	}
+
+	handleClickCloseUserReviewsPopup(){
+		document.getElementsByClassName('modalUserReviews')[0].hidden = true;
+	}
+
+	clearUserReviewsList(){
+		var that = this;
+		that.setState({
+			userReviewsList: [],
+		})
+	}
+
+	showUserReviews(userName){
+		var that = this;
+		that.clearUserReviewsList();
+		var stat = 0;
+		const requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+
+		fetch('https://localhost:9000/reviews/list?user_login=' + that.state.userName, requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(async function(data){
+			if(stat == 200){
+				for(var i = 0; i < data.length; i++){
+					var book_nam = '';
+					var book_aut = '';
+					var review = data[i];
+					var status;
+					var requestOptionsBook = {
+						method: 'GET',
+						headers: { 'Content-Type': 'application/json' },
+					};
+					await fetch('https://localhost:9000/books/book?id=' + review.book_id, requestOptionsBook)
+					.then(function(answer){
+						status = answer.status;
+						return answer.json()
+					})
+					.then(async function(receivedBook){
+						if(status == 200){
+							var book = receivedBook;
+							book_nam = book.book_name;
+							book_aut = book.book_author;
+							that.setState({
+								userReviewsList: that.state.userReviewsList.concat({review_id: review.review_id, book_id: review.book_id, book_name: book_nam, book_author: book_aut, review_rating: review.review_rating, review_content: review.review_content })
+							});
+						}
+					})
+				}
+			}
+		})
+		.then(function(){
+			document.getElementsByClassName('modalUserReviews')[0].hidden = false;
+		})
+	}
+
+	removeUserReview(review_id, book_id){
+		var that = this;
+		var stat = 0;
+		var requestOptions = {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ auth_id: that.state.user_id, auth_password: that.state.password, review_id: review_id })
+		};
+		fetch('https://localhost:9000/reviews/authority-delete', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json()
+		})
+		.then(async function(data){
+			if(stat == 200){
+				document.getElementsByClassName(review_id + '-remove-review-moderator')[0].hidden = true;
+			}
+		})
+		.then(function(){
+			that.clearUserReviewsList();
+			that.showUserReviews();
+		})
+	}
+
+	userReviewClicked(review_id, book_id){
+		document.getElementsByClassName(review_id + '-remove-review-moderator')[0].hidden = !document.getElementsByClassName(review_id + '-remove-review-moderator')[0].hidden;
+	}
+
 	render() {
 		// book_rating: book.book_rating, book_author: book.book_author, book_name: book.book_name, book_released: date, book_genre: genre 
 		const titlesBooksList = this.state.newBooks.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='categoryButton' class='categoryButton' style={{display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.titleBookClicked(d.book_name)}> 
-			<p class={d.book_name + '-spec'}> <br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Rating: {d.book_rating} <br></br><br></br> Genre: {d.book_genre} <br></br> </p> <p style={{ fontSize: '20px'}} class={d.book_name + '-description'} hidden='true'> Description: {d.book_description} </p> 
+			<p class={d.book_name + '-spec'}> <br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Rating: <StarRating value={d.book_rating}/> <br></br> Genre: {d.book_genre} <br></br> </p> <p style={{ fontSize: '20px'}} class={d.book_name + '-description'} hidden='true'> Description: {d.book_description} </p> 
 			<br></br>
 			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-ongoing'} hidden='true' onClick={() => this.userAddBook('Ongoing', d.book_id, d.book_name)}>Add book to ongoing</button>
 			<br></br>
@@ -2104,7 +2195,7 @@ class Window extends React.Component {
 		const ongoingList = this.state.listOngoing.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.ongoingBookClicked(d.book_name)}> 
 			<p class={d.book_name + '-spec-ongoing'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br> Progress: {d.book_progress} % </p> 
 			<br></br>
-			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-ongoing userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-ongoing userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id, d.book_progress)}>Update book status</button>
 			<br></br>
 			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-ongoing userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
 			<br></br>
@@ -2112,11 +2203,11 @@ class Window extends React.Component {
 		const finishedList = this.state.listFinished.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.finishedBookClicked(d.book_name)}> 
 			<p class={d.book_name + '-spec-finished'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} </p> 
 			<br></br>
-			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-finished userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-finished userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id, d.book_progress)}>Update book status</button>
 			<br></br>
 			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-finished userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
 			<br></br>
-			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-rate-finished userBookButton'} hidden='true' onClick={() => this.userRateBook(d.user_book_id)}>Add review</button>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-rate-finished userBookButton'} hidden='true' onClick={() => this.userRateBook(d.book_id)}>Add review</button>
 			<br></br>
 			{/* <button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-review-finished userBookButton'} hidden='true' onClick={() => this.userReviewBook(d.user_book_id)}>Review book</button>
 			<br></br> */}
@@ -2124,14 +2215,14 @@ class Window extends React.Component {
 			const plannedList = this.state.listPlanned.map((d) => <li style={{display: 'inline-block', verticalAlign: 'top',}} key={d.book_name}><button id='bookButton' class='bookButton' style={{ display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.plannedBookClicked(d.book_name)}> 
 			<p class={d.book_name + '-spec-planned'}> Name: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} </p> 
 			<br></br>
-			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-planned userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id)}>Update book status</button>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-update-planned userBookButton'} hidden='true' onClick={() => this.userUpdateBook(d.user_book_id, d.book_progress)}>Update book status</button>
 			<br></br>
 			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-remove-planned userBookButton'} hidden='true' onClick={() => this.userRemoveBook(d.user_book_id)}>Remove book</button>
 			<br></br>
 		</button></li>);
 
-		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }}> <br></br>
-			<br></br> Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} <br></br><br></br> Role: {d.usRole} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
+		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><br></br><button style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.showUserReviews(d.userName)}>
+			Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} <br></br><br></br> Role: {d.usRole} </button><br></br><br></br><div style={{ textAlign: 'center' }}>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.resetUserPassword(d.userName)}>Reset Password</button>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeUser(d.userName)}>Remove User</button>
 			<br></br><br></br>
@@ -2143,6 +2234,24 @@ class Window extends React.Component {
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeBook(d.book_id)}>Remove Book</button>
 			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.updateBook(d.book_id, d.book_genre)}>Update Book</button>
 		</div></li>);
+
+		const reviewsToShow = this.state.reviewsList.map((d) => <li style={{display: 'inline-block'}} key={d.review_id}><button id='bookButton' class={d.review_id + ' bookButton'} style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', color: 'black', display: 'inline-block', width: '1000px', height: '600px', cursor: 'pointer', fontSize: '20px', }} onClick={() => this.reviewClicked(d.review_id, d.book_id)}>
+			<br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Rating: <StarRating value={d.review_rating}/> <br></br>  Content: {d.review_content}<br></br><br></br>
+			<div style={{ textAlign: 'center' }}>
+			<br></br>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.review_id + '-update-review userBookButton'} hidden='true' onClick={() => this.userRemoveReview(d.review_id, d.book_id)}>Remove review</button>
+			<br></br>
+			<br></br>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.review_id + '-remove-review userBookButton'} hidden='true' onClick={() => this.userUpdateReview(d.review_id, d.book_id)}>Update review</button>
+			<br></br>
+		</div></button></li>);
+
+		const userReviews = this.state.userReviewsList.map((d) =>  <li style={{display: 'inline-block'}} key={d.review_id}><button id='bookButton' class={d.review_id + ' bookButton'} style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', color: 'black', display: 'inline-block', width: '1000px', height: '600px', cursor: 'pointer', fontSize: '20px', }} onClick={() => this.userReviewClicked(d.review_id, d.book_id)}>
+		<br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Rating: <StarRating value={d.review_rating}/> <br></br>  Content: {d.review_content}<br></br><br></br>
+		<br></br>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.review_id + '-remove-review-moderator userBookButton'} hidden='true' onClick={() => this.removeUserReview(d.review_id, d.book_id)}>Remove review</button>
+		<br></br>
+		</button></li>);
 		
 		const noHover = {
 			pointerEvents: 'none',
@@ -2228,67 +2337,6 @@ class Window extends React.Component {
 
 							<hr></hr>
 							<div style={{ display: 'block', backgroundColor: '#b30000', height: '100%'}}>
-
-								<div className="modalDelete" hidden='true'>
-									<div className="modal_content">
-									<span className="close" onClick={this.handleClickDeletePopup}>
-										&times;
-									</span>
-										<h2 style={{textAlign: 'center'}}>Type in your password to delete Account.</h2>
-										<div style={{ textAlign: 'center'}}>
-											<label>
-											Password:
-											<input type="password" name="name" onChange={this.handleChangeDeletePopup} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '300px'}}/>
-											</label>
-										</div>
-										<br />
-										<div style={{ textAlign: 'center'}}> 
-											<button id="submitButton" class="submitButton" onClick={this.handleSubmitDeletePopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
-										</div>
-									</div>
-								</div>
-
-								<div className="modalUpdate" hidden='true'>
-									<div className="modal_content">
-									<span className="close" onClick={this.handleClickCloseUpdatePopup}>
-										&times;
-									</span>
-										<h2 style={{textAlign: 'center'}}>Type in your data you want to update.</h2>
-										<div style={{ textAlign: 'center'}}>
-											<label>
-											<input type="text" name="name" onChange={this.handleChangeUpdateNamePopup} placeholder='Name' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-											</label>
-											<br></br>
-											<br></br>
-											<label>
-											<input type="text" name="name" onChange={this.handleChangeUpdateSurnamePopup} placeholder='Surname' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-											</label>
-											<br></br>
-											<br></br>
-											<label>
-											<input type="text" name="name" onChange={this.handleChangeUpdateDateOfBirth} placeholder='Date of birth (for example YYYY-MM-DD)' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-											</label>
-											<br></br>
-											<br></br>
-											<label>
-											<input type="text" name="name" onChange={this.handleChangeUpdateNewPassword} placeholder='New password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-											</label>
-											<br></br>
-											<br></br>
-											<h2 style={{ textAlign: 'center', fontSize: '30px' }}>
-												Type in current password to update user data.
-											</h2>
-											<br></br>
-											<label>
-											<input type="password" name="name" onChange={this.handleChangeUpdateOldPassword} placeholder='Current password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-											</label>
-										</div>
-										<br />
-										<div style={{ textAlign: 'center'}}> 
-											<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdatePopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
-										</div>
-									</div>
-								</div>
 								
 								<div class='toView'>
 									{/* <p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '60px'}}>{[this.state.libraryText]}</p> */}
@@ -2360,14 +2408,7 @@ class Window extends React.Component {
 										<div class='userReviewsDiv' hidden={!this.state.reviewsChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My reviews</p>
 											<div style={{ textAlign: 'center', color: 'white', fontSize: '50px' }}>
-												{/* {reviewsList} */}
-												<br></br>
-												<br></br>
-												<br></br>
-												You have no reviews yet
-												<br></br>
-												<br></br>
-												<br></br>
+												{reviewsToShow}
 											</div>
 
 										</div>
@@ -2377,7 +2418,7 @@ class Window extends React.Component {
 												<span className="close" onClick={this.handleClickCloseUpdateUserBookPopup}>
 													&times;
 												</span>
-												<h2 style={{textAlign: 'center'}}>Choose new status, update progress and type in your password to update selected book.</h2>
+												<h2 style={{textAlign: 'center'}}>Choose new status or update progress</h2>
 												<div style={{ textAlign: 'center'}}>
 													<select class="dropdownUserStatus" id="app-library" style={{ marginLeft: '20px', height: '40px', width: '500px'}} onChange={this.handleChangeUpdateBookStatus}>
 														<option value="" disabled='true' selected>Status</option>
@@ -2395,9 +2436,9 @@ class Window extends React.Component {
 													<br></br>
 													<br></br>
 													<br></br>
-													<label>
+													{/* <label>
 													<input type="password" name="name" onChange={this.handleChangeUpdateBookPassword} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
-													</label>
+													</label> */}
 												</div>
 												<br />
 												<div style={{ textAlign: 'center'}}> 
@@ -2426,6 +2467,91 @@ class Window extends React.Component {
 												<br />
 												<div style={{ textAlign: 'center'}}> 
 													<button id="submitButton" class="submitButton" onClick={this.handleSubmitRateBookPopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
+												</div>
+											</div>
+										</div>
+
+										<div className="modalUpdateRateUserBook" hidden='true'>
+											<div className="modal_content">
+												<span className="close" onClick={this.handleClickCloseUpdateRateUserBookPopup}>
+													&times;
+												</span>
+												<h2 style={{textAlign: 'center'}}>Choose rate of selected book.</h2>
+												<h2 style={{textAlign: 'center'}}>{this.rateStatusText}</h2>
+												<div style={{ textAlign: 'center'}}>
+
+												<StarRating value={3}/>
+
+													<label>
+														<input type="text" name="name" onChange={this.handleChangeRateBookContent} placeholder='Review content' style={{ marginLeft: '20px', height: '90px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+												</div>
+												<br />
+												<div style={{ textAlign: 'center'}}> 
+													<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateRateBookPopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
+												</div>
+											</div>
+										</div>
+
+										<div className="modalDelete" hidden='true'>
+											<div className="modal_content">
+											<span className="close" onClick={this.handleClickDeletePopup}>
+												&times;
+											</span>
+												<h2 style={{textAlign: 'center'}}>Type in your password to delete Account.</h2>
+												<div style={{ textAlign: 'center'}}>
+													<label>
+													Password:
+													<input type="password" name="name" onChange={this.handleChangeDeletePopup} placeholder='Password' style={{ marginLeft: '20px', height: '30px', width: '300px'}}/>
+													</label>
+												</div>
+												<br />
+												<div style={{ textAlign: 'center'}}> 
+													<button id="submitButton" class="submitButton" onClick={this.handleSubmitDeletePopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
+												</div>
+											</div>
+										</div>
+
+										<div className="modalUpdate" hidden='true'>
+											<div className="modal_content">
+											<span className="close" onClick={this.handleClickCloseUpdatePopup}>
+												&times;
+											</span>
+												<h2 style={{textAlign: 'center'}}>Type in your data you want to update.</h2>
+												<div style={{ textAlign: 'center'}}>
+													<label>
+													<input type="text" name="name" onChange={this.handleChangeUpdateNamePopup} placeholder='Name' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+													<label>
+													<input type="text" name="name" onChange={this.handleChangeUpdateSurnamePopup} placeholder='Surname' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+													<label>
+													<input type="text" name="name" onChange={this.handleChangeUpdateDateOfBirth} placeholder='Date of birth (for example YYYY-MM-DD)' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+													<label>
+													<input type="text" name="name" onChange={this.handleChangeUpdateNewPassword} placeholder='New password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+													<br></br>
+													<br></br>
+													<h2 style={{ textAlign: 'center', fontSize: '30px' }}>
+														Type in current password to update user data.
+													</h2>
+													<br></br>
+													<label>
+													<input type="password" name="name" onChange={this.handleChangeUpdateOldPassword} placeholder='Current password' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
+													</label>
+												</div>
+												<br />
+												<div style={{ textAlign: 'center'}}> 
+													<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdatePopup} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Confirm</button>
 												</div>
 											</div>
 										</div>
@@ -2700,6 +2826,15 @@ class Window extends React.Component {
 							<div style={{width: '800px', height: '600px', alignContent: 'center'}}>
 								<button style={{}} id="modeButton" class='modeButton' onClick={this.getUsersList}>Update Users List</button>
 								{usersList}
+							</div>
+							
+							<div className="modalUserReviews" hidden='true'>
+								<div className="modal_content">
+									<span className="close" onClick={this.handleClickCloseUserReviewsPopup}>
+										&times;
+									</span>
+									{userReviews}
+								</div>
 							</div>
 						</div>	
 						)

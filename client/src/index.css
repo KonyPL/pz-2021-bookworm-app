@@ -233,7 +233,18 @@ code {
   border: 2px solid black;
 }
 
-.modalUpdateUserBook{
+.modalUpdate{
+  /* background-color: white; */
+  position: absolute;
+  top: 35%;
+  left: 28%;
+  width: 80%;
+  padding: 20px;
+  border-radius: 5px;
+  /* border: 2px solid black; */
+}
+
+.modalDelete{
   /* background-color: white; */
   position: absolute;
   top: 35%;
@@ -250,6 +261,28 @@ code {
   top: 35%;
   left: 28%;
   width: 80%;
+  padding: 20px;
+  border-radius: 5px;
+  /* border: 2px solid black; */
+}
+
+.modalUpdateRateUserBook{
+   /* background-color: white; */
+   position: absolute;
+   top: 35%;
+   left: 28%;
+   width: 80%;
+   padding: 20px;
+   border-radius: 5px;
+   /* border: 2px solid black; */
+}
+
+.modalUserReviews{
+  /* background-color: white; */
+  position: absolute;
+  top: 35%;
+  left: 20%;
+  width: 2700px;
   padding: 20px;
   border-radius: 5px;
   /* border: 2px solid black; */
