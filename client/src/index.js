@@ -8,7 +8,6 @@ import profilePhotoSource from "./images/noprofile.jpg";
 import solaris from "./images/solaris.jpg";
 import { isCompositeComponent } from 'react-dom/test-utils';
 import 'select-pure';
-import { search } from '../../server/routes/books';
 // import SelectPure from './selectPure';
 
 var activeForUpdate;
@@ -235,6 +234,10 @@ class Window extends React.Component {
 		this.removeUserReview = this.removeUserReview.bind(this);
 		this.userReviewClicked = this.userReviewClicked.bind(this);
 		this.clearUserReviewsList = this.clearUserReviewsList.bind(this);
+
+		this.handleSearchChangeAdmin = this.handleSearchChangeAdmin.bind(this);
+		this.handleSearchChangeMode = this.handleSearchChangeMode.bind(this);
+
 
 		this.state = { 
 			div1Shown: true, 
@@ -631,30 +634,105 @@ class Window extends React.Component {
 			stat = response.status;
 			if(stat == 200){
 				that.setState({
-					div1Shown: !that.state.div1Shown,
-					userName: '',
-					password: '',
-					user_id: '',
-					read: '',
-					planned: '',
-					ongoing: '',
-					name: '',
-					surName: '',
-					role: '',
-					username: '',
-					password: '',
-					listOngoing: [],
-					listFinished: [],
-					listPlanned: [],
+					div1Shown: true, 
+					userPage: false,
+					adminPage: false,
+					modePage: false,
+					profilPage: false,
+					
+					startText: '',
+					username: '', 
+					password: '', 
+					user_id: '', 
+					dateOfBirth: '',
+
 					newBooksChosen: false,
 					genresChosen: false,
 					authorsChosen: false,
+
 					statisticsChosen: false,
 					profileInfoChosen: false,
 					booksChosen: false,
 					reviewsChosen: false,
 					listChosen: false,
-					profileText: '',
+
+					libraryText: 'Library',
+					profileText: 'Profile',
+					
+					resetUserLogin: '',
+					resetUserPass: '',
+
+					newBooks: [],
+					genres: [],
+					authors: [],
+					adminBooksList: [],
+					userBooksList: [],
+
+					search: '',
+					
+					deleteAccountSeen: false,
+
+					deleteAccountModal: true,
+					inputValue: '',
+					enemyBoardButtons: true,
+
+					name: 'Dominik',
+					surName: 'Tomkiewicz',
+					userName: 'Dodomonitor2',
+					profilePhoto: profilePhotoSource,
+					role: '',
+
+					read: 0,
+					planned: 0,
+					ongoing: 0,
+					reviews: 0,
+					favGenre: 'Science Fiction',
+					favAuthor: 'Stanislaw Lem',
+
+					inputName: '',
+					inputSurname: '',
+					inputNewPassword: '',
+					inputOldPassword: '',
+					inputDateOfBirth: '',
+
+					books: [],
+					reviews: 0,
+					list: [],
+					users: [],
+					reviewsList: [],
+
+					newBookName: '',
+					newBookAuthor: '',
+					modalNewBookStatus: '',
+
+					newGenreName: '',
+					newGenreDescription: '',
+					modalNewGenreStatus: '',
+
+					updateBookDate: '',
+					updateBookId: '',
+					updateBookGenre: '',
+					updateBookDescription: '',
+
+					listOngoing: [],
+					listFinished: [],
+					listPlanned: [],
+
+					inputUpdateBookStatus: '',
+					inputUpdateBookProgress: 1,
+					inputUpdateBookPassword: '',
+					bookToUpdateId: 0,
+
+					ratingBookId: 0,
+					ratingBookValue: 0,
+					ratingBookContent: '',
+					rateStatusText: '',
+
+					reviewsEx: [{ review_id: 1, book_name: 'Test'}],
+
+					updateReviewId: 0,
+
+					userReviewsList: [],
 				});
 			}
 		});
@@ -921,64 +999,186 @@ class Window extends React.Component {
 		var that = this;
 		that.setState({search: e.target.value});
 		that.clearUserBooksList();
-		var filter = document.getElementsByClassName('dropdownLibrary');
-		if(filter == 'library-new-books'){
-			var stat = 0;
-			const requestOptions = {
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-			};
+		var filter = document.getElementsByClassName('dropdownUserFilter')[0].value;
+		that.clearUserBooksList();
+		var stat = 0;
+		const requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
 
-			fetch('https://localhost:9000/books/list?name=' + search, requestOptions)
-			.then(function(response){
-				stat = response.status;
-				that.setState({
-					newBooks: [],
-				})
-				return response.json();
+		fetch('https://localhost:9000/books/list?' + filter + '=' + that.state.search, requestOptions)
+		.then(function(response){
+			stat = response.status;
+			that.setState({
+				newBooks: [],
 			})
-			.then(async function(data){
-				if(stat == 200){
-					for(var i = 0; i < data.length; i++){
-						var book = data[i];
-						try{
-							date = book.book_released.substring(0, 10)
-						}
-						catch(error){
+			return response.json();
+		})
+		.then(async function(data){
+			console.log(data)
+			if(stat == 200){
+				for(var i = 0; i < data.length; i++){
+					var book = data[i];
+					try{
+						date = book.book_released.substring(0, 10)
+					}
+					catch(error){
 
-						}
-						if(date == ''){
-							date = 'No date yet'
-						}
-						if(book.book_genre){
-							var date;
-							var genre;
-							var statusGenre;
-							var requestOptionsGenre = {
-								method: 'GET',
-								headers: { 'Content-Type': 'application/json' },
-							};
-							await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
-							.then(function(genreResponse){
-								statusGenre = genreResponse.status;
-								return genreResponse.json()
-							})
-							.then(function(genreName){
-								genre = genreName.name
-								that.setState({
-									newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre, book_description: book.book_description })
-								})
-							})
-						}
-						else{
+					}
+					if(date == ''){
+						date = 'No date yet'
+					}
+					if(book.book_genre){
+						var date;
+						var genre;
+						var statusGenre;
+						var requestOptionsGenre = {
+							method: 'GET',
+							headers: { 'Content-Type': 'application/json' },
+						};
+						await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
+						.then(function(genreResponse){
+							statusGenre = genreResponse.status;
+							return genreResponse.json()
+						})
+						.then(function(genreName){
+							genre = genreName.name
 							that.setState({
-								newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
+								newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genre, book_description: book.book_description })
 							})
-						}
+						})
+					}
+					else{
+						that.setState({
+							newBooks: that.state.newBooks.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
+						})
 					}
 				}
-			})
-		}
+			}
+		})
+	}
+
+	handleSearchChangeAdmin(e) {
+		// this.setState({search: e.target.value});
+		var that = this;
+		that.setState({search: e.target.value});
+		that.clearUserBooksList();
+		var filter = document.getElementsByClassName('dropdownAdmin')[0].value;
+		that.clearAdminBooksList();
+		var that = this;
+		var stat = 0;
+		var date;
+		var genre;
+		var statusGenre;
+		const requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+
+		fetch('https://localhost:9000/books/list?' + filter + '=' + that.state.search, requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			return response.json();
+		})
+		.then(async function(receivedBooks){
+			if(stat == 200){
+				for(var i = 0; i < receivedBooks.length; i++){
+					var book = receivedBooks[i];
+					if(book.book_id){
+						var requestOptionsGenre = {
+							method: 'GET',
+							headers: { 'Content-Type': 'application/json' },
+						};
+						await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
+						.then(function(genreResponse){
+							statusGenre = genreResponse.status;
+							return genreResponse.json()
+						})
+						.then(function(genreReceived){
+							if(stat == 200){
+								genre = genreReceived;
+							}
+							return genre;
+						})
+						.then(function(genre){
+							var genreName = genre.name
+							try{
+								date = book.book_released.substring(0, 10)
+							}
+							catch(error){
+
+							}
+							if(date == ''){
+								date = 'No date yet';
+							}
+							that.setState({
+								adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: genreName, book_description: book.book_description })
+							})
+						})
+					}
+					else{
+						that.setState({
+							adminBooksList: that.state.adminBooksList.concat({book_rating: book.book_rating, book_id: book._id, book_name: book.book_name, book_author: book.book_author, book_released: date, book_genre: '', book_description: book.book_description })
+						})
+					}
+				}
+			}
+		})
+	}
+
+	handleSearchChangeMode(){
+		var that = this;
+		that.setState({search: e.target.value});
+		that.clearUserBooksList();
+		var filter = document.getElementsByClassName('dropdownMode')[0].value;
+		that.clearUsersList();
+		var receivedUsers;
+		const requestOptions = {
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		};
+		var stat = 0;
+		fetch('https://localhost:9000/users/list', requestOptions)
+		.then(function(response) { 
+			stat = response.status;
+			if(stat == 200){
+				receivedUsers = response.json();
+			}
+			return receivedUsers;
+		}).then(function(receivedUsers){
+			// console.log(receivedUsers)
+			for(var i = 0; i < receivedUsers.length; i++){
+				var exName = ''
+				var exSur = ''
+				var role = ''
+				var usName = '';
+				var requestOptionsUser = {
+					method: 'GET',
+					headers: { 'Content-Type': 'application/json' },
+				};
+				fetch('https://localhost:9000/users/user?login=' + receivedUsers[i].user_login, requestOptionsUser)
+				.then(function(response) { 
+					stat = response.status;
+					var user_data;
+					if(stat == 200){
+						user_data = response.json()
+					}
+					return user_data;
+				})
+				.then(function(user_data){
+					if(stat == 200){
+						exName = user_data.user_name;
+						exSur = user_data.user_surname;
+						role = user_data.user_role;
+						usName = user_data.user_login;
+						that.setState({
+							users: that.state.users.concat({ userName: usName, name: exName, surName: exSur, usRole: role })
+						});
+					}
+				})
+			}
+		})
 	}
 
 	userProfileChange(){
@@ -1404,7 +1604,6 @@ class Window extends React.Component {
 			if(stat == 200){
 				for(var i = 0; i < receivedBooks.length; i++){
 					var book = receivedBooks[i];
-					console.log(book)
 					if(book.book_id){
 						var requestOptionsGenre = {
 							method: 'GET',
@@ -2397,7 +2596,7 @@ class Window extends React.Component {
 									</select>
 									</div>
 									<div id="search-box">
-										<input id="search-input" type="text" placeholder="Search" style={{ marginLeft: '350px'}} onChange={this.handleSearchChange}/>
+										<input id="search-input" type="text" placeholder="Search" style={{ display: 'inline-block', marginLeft: '350px'}} onChange={this.handleSearchChange}/>
 									</div>
 								</div>
 
@@ -2679,8 +2878,16 @@ class Window extends React.Component {
 										{/* <option value="user-list">My list</option> */}
 									</select>
 									</div>
+									<br></br>
 									<div id="search-box">
-										<input id="search-input" type="text" placeholder="Search" style={{ marginLeft: '350px'}} onChange={this.handleSearchChange}/>
+										<select class="dropdownUserFilter" id="user-profile" style={{ display: 'inline-block', width: '200px' }}>
+											<option value="" disabled='true' selected>Filter</option>
+											<option value="name">Title</option>
+											<option value="author">Author</option>
+											<option value="genre">Genre</option>
+											<option value="release_date">Release date</option>
+										</select>
+										<input id="search-input" type="text" placeholder="Search" style={{ display: 'inline-block'}} onChange={this.handleSearchChange}/>
 									</div>
 								</div>
 								
@@ -2734,14 +2941,12 @@ class Window extends React.Component {
 							<hr></hr>
 								<select class="dropdownAdmin" id="user-profile" style={{ display: 'inline-block', width: '100px' }}>
 									<option value="" disabled='true' selected>Filter</option>
-									<option value="user-list">Genres</option>
-									<option value="user-stats">Authors</option>
-									<option value="user-info">Date released</option>
-									<option value="user-books">Date added</option>
-									<option value="user-reviews">Rating</option>
+									<option value="name">Title</option>
+									<option value="author">Author</option>
+									<option value="genre">Genre</option>
+									<option value="release_date">Release date</option>
 								</select>
-								<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" />
-								<button style={{display: 'inline-block'}} id="searchButton" class='searchButton'>Search User</button>
+								<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" onChange={this.handleSearchChangeAdmin} />
 							</div>
 								<br></br>								
 
@@ -2864,8 +3069,14 @@ class Window extends React.Component {
 							<div id="pageAfterLogin" class="pageAfterLogin" style={{ display: 'flex', flexDirection: 'row', }}>
 
 								<div style={{width: '100%', marginLeft: '300px'}}>
-									<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" />
-									<button style={{display: 'inline-block'}} id="searchButton" class='searchButton'>Search User</button>
+									<select class="dropdownMode" id="user-profile" style={{ display: 'inline-block', width: '200px' }}>
+										<option value="" disabled='true' selected>Filter</option>
+										<option value="name">Username</option>
+										<option value="author">Name</option>
+										<option value="genre">Surname</option>
+										<option value="release_date">Role</option>
+									</select>
+									<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" onChange={this.handleSearchChangeMode}/>
 									{/* <span id="filter" class="user-select-pure">Select Pure</span> */}
 								</div>
 								

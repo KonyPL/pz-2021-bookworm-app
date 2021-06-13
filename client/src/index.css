@@ -35,10 +35,22 @@ body {
 }
 
 #search-input {
-  width: 1190px;
+  width: 990px;
   height: 40px;
   background-color: #ff8080;
   color: white;
+}
+
+
+.dropdownUserFilter {
+  margin-left: 350px;
+  vertical-align: middle;
+  font-size: 20px;
+  height: 30px;
+  width: 100px;
+  color: white;
+  background-color: #ff8080;
+  cursor: pointer;
 }
 
 .adminButton {
