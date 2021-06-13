@@ -112,11 +112,15 @@ router.get('/list', async function(req, res, next) {
     params.book_name = req.query.name;
   if(req.query.release_date)
     params.book_released = req.query.release_date;
-  if(req.query.rating)
-    params.book_rating = req.query.rating;
-
+  
   let all = await Book.find(params)
   var ratedBooks = await calculate_rating(all)
+  if(req.query.rating)
+    for(var b in ratedBooks){
+      if(ratedBooks[b].book_rating != req.query.rating){
+        ratedBooks.splice(b, 1)
+      }
+    }
   res.status(200).send(ratedBooks);
 });
 
