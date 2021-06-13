@@ -99,7 +99,17 @@ function new_Table(json_table){
 
 // LIST USERS
 router.get('/list', async function(req, res, next) {
-  let all = await User.find()
+  params= {};
+  if(req.query.user_login)
+    params.user_login = { "$regex": req.query.user_login, "$options": "i" };
+  if(req.query.user_name)
+    params.user_name = { "$regex": req.query.user_name, "$options": "i" };
+  if(req.query.user_surname)
+    params.user_surname = { "$regex": req.query.user_surname, "$options": "i" };
+  if(req.query.user_role)
+    params.user_role = { "$regex": req.query.user_role, "$options": "i" };
+  
+  let all = await User.find(params)
   let tabela = await new_Table(all)
   res.status(200).send(tabela);
 });
