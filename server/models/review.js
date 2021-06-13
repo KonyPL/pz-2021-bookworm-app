@@ -6,7 +6,7 @@ var ReviewSchema = new Schema(
   {
     user_id: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     book_id: {type: Schema.Types.ObjectId, ref: 'Book', required: true},
-    review_rating: {type: Number, default: 0, min: 0, max: 10, required: true},
+    review_rating: {type: Number, default: 0, min: 0, max: 5, required: true},
     review_content: {type: String, required: false}
   }
 );

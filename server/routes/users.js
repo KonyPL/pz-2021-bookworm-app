@@ -12,6 +12,7 @@ router.get('/', function(req, res, next) {
 
 // ADD USER
 router.post('/add', async function(req, res, next) {
+  if (req.body.user_login == "User deleted") return res.status(403).send("Cannot set this username");
   let user_check = await User.findOne({user_login: req.body.user_login});
   if (user_check) return res.status(400).send("Username taken");
   var user = new User({
