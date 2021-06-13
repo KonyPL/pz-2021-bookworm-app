@@ -46,11 +46,15 @@ router.patch('/update', async function(req, res, next) {
 
 // DELETE GENRE
 router.delete('/delete', async function(req, res, next) {
-  let genre_check = await Genre.deleteOne({ _id: req.body.genre_id});
-  if (genre_check.deletedCount == 1){
-    return res.status(200).send("Genre deleted") 
-  } else {
-    res.status(400).send("Bad data")
+  try{
+    let genre_check = await Genre.deleteOne({ _id: req.body.genre_id});
+    if (genre_check.deletedCount == 1){
+      return res.status(200).send("Genre deleted") 
+    } else {
+      res.status(400).send("Bad data")
+    }
+  }catch(error){
+    res.status(400).send(error)
   }
 });
 
@@ -62,11 +66,15 @@ router.get('/list', async function(req, res, next) {
 
 //GET GENRE
 router.get('/genre', async function(req, res, next) {
-  let genre_check = await Genre.findOne({_id: req.query.id});
-  if(genre_check){
-    res.status(200).send(genre_check)
-  } else {
-    res.status(400).send("This genre doesn't exist in database")
+  try{
+    let genre_check = await Genre.findOne({_id: req.query.id});
+    if(genre_check){
+      res.status(200).send(genre_check)
+    } else {
+      res.status(400).send("This genre doesn't exist in database")
+    }
+  }catch(error){
+    res.status(400).send(error)
   }
 });
 
