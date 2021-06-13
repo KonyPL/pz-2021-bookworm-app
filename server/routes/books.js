@@ -103,13 +103,13 @@ async function calculate_rating(json_table){
 router.get('/list', async function(req, res, next) {
   params= {};
   if(req.query.author)
-    params.book_author = req.query.author;
+    params.book_author = { "$regex": req.query.author, "$options": "i" };
   if(req.query.genre){
-    let gen = await Genre.findOne({name: req.query.genre})
+    let gen = await Genre.findOne({name: { "$regex": req.query.genre, "$options": "i" }})
     params.book_genre = gen._id;
   }
   if(req.query.name)
-    params.book_name = req.query.name;
+    params.book_name = { "$regex": req.query.name, "$options": "i" };
   if(req.query.release_date)
     params.book_released = req.query.release_date;
   
