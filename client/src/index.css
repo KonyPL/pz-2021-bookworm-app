@@ -127,6 +127,16 @@ code {
   cursor: pointer;
 }
 
+.dropdownMode {
+  margin-left: 220px;
+  vertical-align: middle;
+  font-size: 20px;
+  height: 30px;
+  color: white;
+  background-color: #ff8080;
+  cursor: pointer;
+}
+
 .searchButton {
   vertical-align: middle;
   font-size: 30px;

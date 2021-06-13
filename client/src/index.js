@@ -1127,10 +1127,9 @@ class Window extends React.Component {
 		})
 	}
 
-	handleSearchChangeMode(){
+	handleSearchChangeMode(e){
 		var that = this;
 		that.setState({search: e.target.value});
-		that.clearUserBooksList();
 		var filter = document.getElementsByClassName('dropdownMode')[0].value;
 		that.clearUsersList();
 		var receivedUsers;
@@ -1139,7 +1138,7 @@ class Window extends React.Component {
 			headers: { 'Content-Type': 'application/json' },
 		};
 		var stat = 0;
-		fetch('https://localhost:9000/users/list', requestOptions)
+		fetch('https://localhost:9000/users/list?' + filter + '=' + that.state.search, requestOptions)
 		.then(function(response) { 
 			stat = response.status;
 			if(stat == 200){
@@ -3071,10 +3070,10 @@ class Window extends React.Component {
 								<div style={{width: '100%', marginLeft: '300px'}}>
 									<select class="dropdownMode" id="user-profile" style={{ display: 'inline-block', width: '200px' }}>
 										<option value="" disabled='true' selected>Filter</option>
-										<option value="name">Username</option>
-										<option value="author">Name</option>
-										<option value="genre">Surname</option>
-										<option value="release_date">Role</option>
+										<option value="user_login">Username</option>
+										<option value="user_name">Name</option>
+										<option value="user_surname">Surname</option>
+										<option value="role">Role</option>
 									</select>
 									<input style={{display: 'inline-block'}} id="search-input" type="text" placeholder="Search" onChange={this.handleSearchChangeMode}/>
 									{/* <span id="filter" class="user-select-pure">Select Pure</span> */}
