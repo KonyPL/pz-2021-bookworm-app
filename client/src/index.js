@@ -111,6 +111,7 @@ const deleteAccountButton = {
 
 async function getGenre(id){
 	var statusGenre;
+	var genre;
 	var requestOptionsGenre = {
 		method: 'GET',
 		headers: { 'Content-Type': 'application/json' },
@@ -122,10 +123,10 @@ async function getGenre(id){
 		console.log(data)
 		return data
 	})
-	.then(function(genre){
-		console.log(genre)
-		return genre;
+	.then(function(genreName){
+		genre = genreName;
 	})
+	return genre;
 }
 
 class Window extends React.Component {
@@ -1085,11 +1086,12 @@ class Window extends React.Component {
 			if(stat == 200){
 				for(var i = 0; i < receivedBooks.length; i++){
 					var book = receivedBooks[i];
-					if(book.book_id){
+					if(book._id){
 						var requestOptionsGenre = {
 							method: 'GET',
 							headers: { 'Content-Type': 'application/json' },
 						};
+						console.log(book.book_genre)
 						await fetch('https://localhost:9000/books/genres/genre?id=' + book.book_genre, requestOptionsGenre)
 						.then(function(genreResponse){
 							statusGenre = genreResponse.status;
@@ -1102,7 +1104,8 @@ class Window extends React.Component {
 							return genre;
 						})
 						.then(function(genre){
-							var genreName = genre.name
+							var genreName = genre.name;
+							console.log(genreName)
 							try{
 								date = book.book_released.substring(0, 10)
 							}
@@ -1621,7 +1624,7 @@ class Window extends React.Component {
 							return genre;
 						})
 						.then(function(genre){
-							var genreName = genre.name
+							var genreName = genre.name;
 							console.log(genreName)
 							try{
 								date = book.book_released.substring(0, 10)
@@ -1703,7 +1706,6 @@ class Window extends React.Component {
 		var mod = document.getElementsByClassName('modalUpdateBook')[0];
 		var that = this;
 		var statusGenre;
-		var genre = that.state.updateBookGenre;
 		var requestOptionsGenre = {
 			method: 'GET',
 			headers: { 'Content-Type': 'application/json' },
@@ -1713,24 +1715,22 @@ class Window extends React.Component {
 			statusGenre = genreResponse.status;
 			return genreResponse.json()
 		})
-		.then(function(genres){
-			if(statusGenre == 200){
-				for(var i = 0; i < genres.length; i++){
-					if(genres[i].name == genre){
-						var stat = 0;
-						const requestOptions = {
-							method: 'PATCH',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: genres[i]._id, book_description: that.state.updateBookDescription })
-						};
-						fetch('https://localhost:9000/books/update', requestOptions)
-						.then(function(response) { 
-							stat = response.status;
-							if(stat == 200){
-								mod.hidden = true;
-							}
-						})
-					}
+		.then(async function(genres){
+			for(var i = 0; i < genres.length; i++){
+				if(genres[i].name == that.state.updateBookGenre){
+					var stat = 0;
+					const requestOptions = {
+						method: 'PATCH',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: genres[i]._id, book_description: that.state.updateBookDescription })
+					};
+					await fetch('https://localhost:9000/books/update', requestOptions)
+					.then(function(response) { 
+						stat = response.status;
+						if(stat == 200){
+							mod.hidden = true;
+						}
+					})
 				}
 			}
 		})
