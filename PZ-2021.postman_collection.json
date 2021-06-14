@@ -1,0 +1,1456 @@
+{
+	"info": {
+		"_postman_id": "1770d1ed-841b-424b-b89c-bf97d0eb2f78",
+		"name": "PZ-2021",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9000/users/user?login=user2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"user"
+							],
+							"query": [
+								{
+									"key": "login",
+									"value": "user2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_login\": \"deleteTest\",\n    \"user_password\": \"1234\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/add",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_id\": \"60bdefb53bdfa427a44c27c4\",\n    \"user_password\": \"1234\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list Users",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9000/users/list",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/logout",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_login\": \"dodo\",\n    \"user_password\": \"test\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_password\": \"testupdate\",\n    \"_id\": \"609948ecbc19a31ba05e015d\",\n    \"user_name\": \"Admin\",\n    \"user_surname\": \"Adminowski\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/update",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "promote User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"promotor_id\": \"609948ecbc19a31ba05e015d\",\n    \"promotor_password\": \"testupdate\",\n    \"promotee\": \"user2\",\n    \"new_role\": \"Moderator\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/promote",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"promote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH reset password for User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"auth_id\": \"609948ecbc19a31ba05e015d\",\n    \"auth_password\": \"testupdate\",\n    \"user_login\": \"user6\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/authority-reset-pass",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"authority-reset-pass"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH delete User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"auth_id\": \"609948ecbc19a31ba05e015d\",\n    \"auth_password\": \"testupdate\",\n    \"user_login\": \"user6\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/users/authority-delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users",
+								"authority-delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "add Book",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_name\": \"Balladyna\",\n    \"book_author\": \"Julisz Słowacki\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/add",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Book",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": \"60a157e989d06447b00b240e\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list Books",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9000/books/list",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"list"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Zwierzchnik",
+									"disabled": true
+								},
+								{
+									"key": "author",
+									"value": "Adam Mickiewicz",
+									"disabled": true
+								},
+								{
+									"key": "genre",
+									"value": "Dramat",
+									"disabled": true
+								},
+								{
+									"key": "release_date",
+									"value": "1999-12-11",
+									"disabled": true
+								},
+								{
+									"key": "rating",
+									"value": "0",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": \"60a160c48f6c1f3ae89ad65f\",\n    \"book_released\": \"1828-02-01\",\n    \"book_genre\": \"60a18430240c4846f4a417e0\",\n    \"book_description\": \"Powieść poetycka napisana przez Adama Mickiewicza na zsyłce w Moskwie, prawdopodobnie między rokiem 1825 a 1828, wydana zaś w lutym 1828 przez drukarnię Karola Kraya; uważana za jeden z najbardziej znanych poematów polskiego romantyzmu. Oryginał wysłany z Moskwy został ocenzurowany przez rosyjskiego cenzora Bazylego Anastasewicza. Mickiewicz musiał usunąć wers Tyś niewolnik, jedyna broń niewolników jest zdrada, a w drugim wydaniu po wprowadzeniu zmian w przedmowie car Mikołaj I nazywany jest przez poetę Ojcem tylu ludów.\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/update",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9000/books/book?id=60a1609e8f6c1f3ae89ad65e",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"book"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "60a1609e8f6c1f3ae89ad65e"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "add Review",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": \"60a160c48f6c1f3ae89ad65f\",\n    \"user_id\": \"60ab825f2efa551a48982527\",\n    \"user_password\": \"test\",\n    \"review_rating\": 3,\n    \"review_content\": \"Tekst Recenzji\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/reviews/add",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"reviews",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Review",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"60ab825f2efa551a48982527\",\n    \"user_password\": \"test\",\n    \"review_id\": \"60ad7dd30d39a34a3cb84bf5\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/reviews/delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"reviews",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AUTH delete Review",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"auth_id\": \"609948ecbc19a31ba05e015d\",\n    \"auth_password\": \"testupdate\",\n    \"review_id\": \"60ad8ae115d55f0e289f82af\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/reviews/authority-delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"reviews",
+								"authority-delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list Reviews",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9000/reviews/list",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"reviews",
+								"list"
+							],
+							"query": [
+								{
+									"key": "book_id",
+									"value": "60a160c48f6c1f3ae89ad65f",
+									"disabled": true
+								},
+								{
+									"key": "user_login",
+									"value": "dodo",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Review",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"60ab825f2efa551a48982527\",\n    \"user_password\": \"test\",\n    \"review_id\": \"60ad8c608762d948b8d38ea7\",\n    \"review_rating\": 9,\n    \"review_content\": \"Tekst Recenzji\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/reviews/update",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"reviews",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Review",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9000/reviews/review?id=60ad7dd30d39a34a3cb84bf5",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"reviews",
+								"review"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "60ad7dd30d39a34a3cb84bf5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserBook",
+			"item": [
+				{
+					"name": "add Book to users lib",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"book_id\": \"60a160c48f6c1f3ae89ad65f\",\n    \"user_id\": \"60ab807e2efa551a48982526\",\n    \"user_password\": \"test\",\n    \"book_status\": \"Finished\",\n    \"book_progress\": 1\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/user-books/add",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-books",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Book from users lib",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"60ab825f2efa551a48982527\",\n    \"user_password\": \"test\",\n    \"user_book_id\": \"60aec641d3c1a505ac09ca0a\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/user-books/delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-books",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list Users' Books",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9000/user-books/list?user_login=dodo",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-books",
+								"list"
+							],
+							"query": [
+								{
+									"key": "book_id",
+									"value": "60a160c48f6c1f3ae89ad65f",
+									"disabled": true
+								},
+								{
+									"key": "user_login",
+									"value": "dodo"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update User Book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_book_id\": \"60b4d6eaaf1ed71b2c6fc801\",\n    \"user_id\": \"60ab807e2efa551a48982526\",\n    \"user_password\": \"test\",\n    \"book_status\": \"Finished\",\n    \"book_progress\": 1\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/user-books/update",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-books",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get User Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9000/user-books/book?id=60aec73dd3c1a505ac09ca0d",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"user-books",
+								"book"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "60aec73dd3c1a505ac09ca0d"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Genre",
+			"item": [
+				{
+					"name": "add Genre",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Dramat\",\n    \"description\": \"Utwór przeznaczony do wystawiania na scenie, gdzie obok tekstu głównego, znajduje się tekst poboczny - didaskalia.\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/add",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Genre",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"genre_id\": \"60a183a6cf3c7336742b8c41\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list Genres",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9000/books/genres/list",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Genre",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"genre_id\": \"60a18106d7a8ea081c05d9ea\",\n    \"name\": \"Epopeja\",\n    \"description\": \"Utwór dużych rozmiarów, pisany wierszem (trzynastozgłoskowcem), ukazujący losy wybranej grupy bohaterów (są nimi zwykli, przeciętni ludzie, przedstawiciele głównie średniej szlachty, choć pojawia się również arystokracja oraz drobna szlachta zaściankowa) na tle ważnych, przełomowych dla całego narodu wydarzeń. Narrator jest wszechobecny, wszechwiedzący i obiektywny. Pojawiają się liczne opisy, zarówno statyczne, jak i dynamiczne, mające na celu opóźnienie, czyli retardację rozwoju wydarzeń i wzmożenie ciekawości czytelnika.\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/update",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Genre",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9000/books/genres/genre?id=60a18106d7a8ea081c05d9ea",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"genre"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "60a18106d7a8ea081c05d9ea"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Genre Requests",
+			"item": [
+				{
+					"name": "add Request",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Poemat2\",\n    \"description\": \"Utwór taki bardzo dramatyczny.\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/add",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete Request",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"genre_request_id\": \"60a196f134698c44047fe5ef\",\n    \"user_id\": \"609948ecbc19a31ba05e015d\",\n    \"user_password\": \"testupdate\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/delete",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete processed Requests",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"609948ecbc19a31ba05e015d\",\n    \"user_password\": \"testupdate\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/delete-processed",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"delete-processed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete rejected Requests",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"609948ecbc19a31ba05e015d\",\n    \"user_password\": \"testupdate\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/delete-processed",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"delete-processed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list Requests",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/list",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "approve Request",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"609948ecbc19a31ba05e015d\",\n    \"user_password\": \"testupdate\",\n    \"genre_request_id\": \"60a1a6ddb181a340bc05fab2\",\n    \"name\": \"Poemat1\",\n    \"description\": \"Dłuższy utwór wierszowany obejmujący ciąg wydarzeń tworzących fabułę lub grupę refleksji, opisów.\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/accept",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"accept"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reject Request",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"609948ecbc19a31ba05e015d\",\n    \"user_password\": \"testupdate\",\n    \"genre_request_id\": \"60a1a6e1b181a340bc05fab3\"\n}\n"
+						},
+						"url": {
+							"raw": "https://localhost:9000/books/genres/requests/reject",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"requests",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Genre",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9000/books/genres/genre?id=60a18106d7a8ea081c05d9ea",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"books",
+								"genres",
+								"genre"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "60a18106d7a8ea081c05d9ea"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
