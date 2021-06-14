@@ -118,7 +118,7 @@ code {
 }
 
 .dropdownAdmin {
-  margin-left: 220px;
+  margin-left: 350px;
   vertical-align: middle;
   font-size: 20px;
   height: 30px;
@@ -128,7 +128,7 @@ code {
 }
 
 .dropdownMode {
-  margin-left: 220px;
+  margin-left: 200px;
   vertical-align: middle;
   font-size: 20px;
   height: 30px;
@@ -254,6 +254,16 @@ code {
   border-radius: 5px;
   border: 2px solid black;
 }
+
+.modalUpdateUserBook {
+  position: absolute;
+  top: 35%;
+  left: 28%;
+  width: 80%;
+  padding: 20px;
+  border-radius: 5px;
+}
+
 
 .modalUpdate{
   /* background-color: white; */

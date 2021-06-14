@@ -1603,7 +1603,8 @@ class Window extends React.Component {
 			if(stat == 200){
 				for(var i = 0; i < receivedBooks.length; i++){
 					var book = receivedBooks[i];
-					if(book.book_id){
+					console.log(book)
+					if(book._id){
 						var requestOptionsGenre = {
 							method: 'GET',
 							headers: { 'Content-Type': 'application/json' },
@@ -1621,6 +1622,7 @@ class Window extends React.Component {
 						})
 						.then(function(genre){
 							var genreName = genre.name
+							console.log(genreName)
 							try{
 								date = book.book_released.substring(0, 10)
 							}
@@ -1719,8 +1721,7 @@ class Window extends React.Component {
 						const requestOptions = {
 							method: 'PATCH',
 							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: that.state.genres[i]._id, book_description: that.state.updateBookDescription })
-							// body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: genres[i]._id })
+							body: JSON.stringify({ book_id: that.state.updateBookId, book_released: that.state.updateBookDate, book_genre: genres[i]._id, book_description: that.state.updateBookDescription })
 						};
 						fetch('https://localhost:9000/books/update', requestOptions)
 						.then(function(response) { 
@@ -2447,7 +2448,7 @@ class Window extends React.Component {
 			<br></br>
 			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-ongoing'} hidden='true' onClick={() => this.userAddBook('Ongoing', d.book_id, d.book_name)}>Add book to ongoing</button>
 			<br></br>
-			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-read'} hidden='true' onClick={() => this.userAddBook('Finished', d.book_id, d.book_name)}>Add book to read</button>
+			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-read'} hidden='true' onClick={() => this.userAddBook('Finished', d.book_id, d.book_name)}>Add book to finished</button>
 			<br></br>
 			<button style={{ width: '200px', fontSize: '20px', color: 'white', backgroundColor: '#ff8080', cursor: 'pointer'}} class={d.book_name + '-planned'} hidden='true' onClick={() => this.userAddBook('Planned', d.book_id, d.book_name)}>Add book to planned</button>
 		</button></li>);
@@ -2488,18 +2489,18 @@ class Window extends React.Component {
 			<br></br>
 		</button></li>);
 
-		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><br></br><button style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.showUserReviews(d.userName)}>
+		const usersList = this.state.users.map((d) => <li style={{display: 'inline-block'}} key={d.userName}><br></br><button style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '25px', }} onClick={() => this.showUserReviews(d.userName)}>
 			Username: {d.userName} <br></br><br></br> Name: {d.name} <br></br><br></br> Surname: {d.surName} <br></br><br></br> Role: {d.usRole} </button><br></br><br></br><div style={{ textAlign: 'center' }}>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.resetUserPassword(d.userName)}>Reset Password</button>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeUser(d.userName)}>Remove User</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.resetUserPassword(d.userName)}>Reset password</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeUser(d.userName)}>Remove user</button>
 			<br></br><br></br>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Administrator', d.userName)}>Promote User to Administrator</button>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Moderator', d.userName)}>Promote User to Moderator</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Administrator', d.userName)}>Promote user to administrator</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '100px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.promote('Moderator', d.userName)}>Promote user to moderator</button>
 		</div></li>);
 
-		const booksListAdmin = this.state.adminBooksList.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '35px', }} ><br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br>  Genre: {d.book_genre} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeBook(d.book_id)}>Remove Book</button>
-			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.updateBook(d.book_id, d.book_genre)}>Update Book</button>
+		const booksListAdmin = this.state.adminBooksList.map((d) => <li style={{display: 'inline-block'}} key={d.book_name}><p style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', display: 'inline-block', width: '500px', height: '600px', cursor: 'pointer', fontSize: '25px', }} ><br></br><br></br> Title: {d.book_name} <br></br><br></br> Author: {d.book_author} <br></br><br></br> Released: {d.book_released} <br></br><br></br>  Genre: {d.book_genre} <br></br><br></br>  Description: {d.book_description} </p><br></br><br></br><div style={{ textAlign: 'center' }}>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.removeBook(d.book_id)}>Remove book</button>
+			<button class='adminButton' style={{ marginLeft: '50px', display: 'inline-block', width: '300px', height: '50px', cursor: 'pointer', fontSize: '35px', }} onClick={() => this.updateBook(d.book_id, d.book_genre)}>Update book</button>
 		</div></li>);
 
 		const reviewsToShow = this.state.reviewsList.map((d) => <li style={{display: 'inline-block'}} key={d.review_id}><button id='bookButton' class={d.review_id + ' bookButton'} style={{ marginLeft: '50px', textAlign: 'center', borderStyle: 'dashed', backgroundColor: 'white', color: 'black', display: 'inline-block', width: '1000px', height: '600px', cursor: 'pointer', fontSize: '20px', }} onClick={() => this.reviewClicked(d.review_id, d.book_id)}>
@@ -2543,7 +2544,7 @@ class Window extends React.Component {
 							Login
 						</button>
 						<button style={buttonChooseStyle} class="buttonChoose" id="chooseRegister" onClick={this.chooseRegister}>
-							Create new Account
+							Create new account
 						</button>
 					</div>
 					<div id="startCheckboxes" style={{textAlign: 'center'}}>
@@ -2595,7 +2596,7 @@ class Window extends React.Component {
 									</select>
 									</div>
 									<div id="search-box">
-										<input id="search-input" type="text" placeholder="Search" style={{ display: 'inline-block', marginLeft: '350px'}} onChange={this.handleSearchChange}/>
+										<input id="search-input" type="text" placeholder="Search" style={{ display: 'inline-block', marginLeft: '450px'}} onChange={this.handleSearchChange}/>
 									</div>
 								</div>
 
@@ -2613,17 +2614,17 @@ class Window extends React.Component {
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My statistics</p>
 											<div class='statsText' style={{display: 'inline-block', width: '100%', textAlign: 'center'}}>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books Read: {this.state.read}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books finished: {this.state.read}</p>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books Planned: {this.state.planned}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books planned: {this.state.planned}</p>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Ongoing: {this.state.ongoing}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Ongoing books: {this.state.ongoing}</p>
 												<br></br>
 												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Reviews: {this.state.reviews}</p>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Favourite Genre: {this.state.favGenre}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Favourite genre: {this.state.favGenre}</p>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Favourite Author: {this.state.favAuthor}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Favourite author: {this.state.favAuthor}</p>
 											</div>
 
 										</div>
@@ -2647,8 +2648,8 @@ class Window extends React.Component {
 												</div>
 											</div>
 											<br></br>
-											<button class='userButton' id='userButton' onClick={this.updateProfilePopup}>Update Profile</button>
-											<button class='userButton' id='userButton' onClick={this.showDeletePopup}>Delete Account</button>
+											<button class='userButton' id='userButton' onClick={this.updateProfilePopup}>Update profile</button>
+											<button class='userButton' id='userButton' onClick={this.showDeletePopup}>Delete account</button>
 
 										</div>
 										<div class='userBooksDiv' hidden={!this.state.booksChosen} style={{ position: 'absolute', top: '30%', width: '100%'  }}>
@@ -2719,7 +2720,7 @@ class Window extends React.Component {
 												<span className="close" onClick={this.handleClickCloseRateUserBookPopup}>
 													&times;
 												</span>
-												<h2 style={{textAlign: 'center'}}>Choose rate of selected book.</h2>
+												<h2 style={{textAlign: 'center'}}>Choose rating of selected book</h2>
 												<h2 style={{textAlign: 'center'}}>{this.rateStatusText}</h2>
 												<div style={{ textAlign: 'center'}}>
 
@@ -2743,7 +2744,7 @@ class Window extends React.Component {
 												<span className="close" onClick={this.handleClickCloseUpdateRateUserBookPopup}>
 													&times;
 												</span>
-												<h2 style={{textAlign: 'center'}}>Choose rate of selected book.</h2>
+												<h2 style={{textAlign: 'center'}}>Choose rating of selected book</h2>
 												<h2 style={{textAlign: 'center'}}>{this.rateStatusText}</h2>
 												<div style={{ textAlign: 'center'}}>
 
@@ -2767,7 +2768,7 @@ class Window extends React.Component {
 											<span className="close" onClick={this.handleClickDeletePopup}>
 												&times;
 											</span>
-												<h2 style={{textAlign: 'center'}}>Type in your password to delete Account.</h2>
+												<h2 style={{textAlign: 'center'}}>Type in your password to delete account</h2>
 												<div style={{ textAlign: 'center'}}>
 													<label>
 													Password:
@@ -2786,7 +2787,7 @@ class Window extends React.Component {
 											<span className="close" onClick={this.handleClickCloseUpdatePopup}>
 												&times;
 											</span>
-												<h2 style={{textAlign: 'center'}}>Type in your data you want to update.</h2>
+												<h2 style={{textAlign: 'center'}}>Type in your data you want to update</h2>
 												<div style={{ textAlign: 'center'}}>
 													<label>
 													<input type="text" name="name" onChange={this.handleChangeUpdateNamePopup} placeholder='Name' style={{ marginLeft: '20px', height: '30px', width: '500px'}}/>
@@ -2809,7 +2810,7 @@ class Window extends React.Component {
 													<br></br>
 													<br></br>
 													<h2 style={{ textAlign: 'center', fontSize: '30px' }}>
-														Type in current password to update user data.
+														Type in current password to update user data
 													</h2>
 													<br></br>
 													<label>
@@ -2954,7 +2955,7 @@ class Window extends React.Component {
 									<span className="close" onClick={this.handleClickDeletePopup}>
 										&times;
 									</span>
-										<h2 style={{textAlign: 'center'}}>Type in your password to delete Account.</h2>
+										<h2 style={{textAlign: 'center'}}>Type in your password to delete Account</h2>
 										<div style={{ textAlign: 'center'}}>
 											<label>
 											Password:
@@ -2984,7 +2985,7 @@ class Window extends React.Component {
 
 							<div className="modalNewBook" hidden='true'>
 								<div className="modal">
-									<h2 style={{textAlign: 'center'}}>Type in Book Name and Book Author</h2>
+									<h2 style={{textAlign: 'center'}}>Type in book name and author</h2>
 									<br></br>
 									<h2 style={{textAlign: 'center'}}>{this.state.modalNewBookStatus}</h2>
 									<div style={{ textAlign: 'center'}}> 
@@ -2994,7 +2995,7 @@ class Window extends React.Component {
 									</div>
 									<br></br>
 									<div style={{ textAlign: 'center'}}> 
-										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewBook} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Add Book</button>
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewBook} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Add book</button>
 										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewBookCancel} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Cancel</button>
 									</div>
 								</div>
@@ -3012,7 +3013,7 @@ class Window extends React.Component {
 									</div>
 									<br></br>
 									<div style={{ textAlign: 'center'}}> 
-										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewGenre} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Add Genre</button>
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewGenre} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Add genre</button>
 										<button id="submitButton" class="submitButton" onClick={this.handleSubmitNewGenreCancel} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Cancel</button>
 									</div>
 								</div>
@@ -3035,7 +3036,7 @@ class Window extends React.Component {
 									</div>
 									<br></br>
 									<div style={{ textAlign: 'center'}}> 
-										<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBook} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Update Book</button>
+										<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBook} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Update book</button>
 										<button id="submitButton" class="submitButton" onClick={this.handleSubmitUpdateBookCancel} style={{ cursor: 'pointer', height: '30px', width: '400px' }}>Cancel</button>
 									</div>
 								</div>
@@ -3085,7 +3086,7 @@ class Window extends React.Component {
 									<span className="close" onClick={this.handleClickDeletePopup}>
 										&times;
 									</span>
-										<h2 style={{textAlign: 'center'}}>Type in your password to delete Account.</h2>
+										<h2 style={{textAlign: 'center'}}>Type in your password to delete account</h2>
 										<div style={{ textAlign: 'center'}}>
 											<label>
 											Password:
@@ -3103,7 +3104,7 @@ class Window extends React.Component {
 							</div>
 							<hr></hr>
 							<div style={{width: '800px', height: '600px', alignContent: 'center'}}>
-								<button style={{}} id="modeButton" class='modeButton' onClick={this.getUsersList}>Update Users List</button>
+								<button style={{}} id="modeButton" class='modeButton' onClick={this.getUsersList}>Update users list</button>
 								{usersList}
 							</div>
 							
