@@ -4,6 +4,7 @@ var User = require('../models/user')
 var UserBook = require('../models/userBook')
 var Book = require('../models/book')
 var Genre = require('../models/genre')
+var bcrypt = require('bcryptjs');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -15,39 +16,42 @@ router.post('/add', async function(req, res, next) {
   if (req.body.user_login == "User deleted") return res.status(403).send("Cannot set this username");
   let user_check = await User.findOne({user_login: req.body.user_login});
   if (user_check) return res.status(400).send("Username taken");
-  var user = new User({
-    user_login: req.body.user_login,
-    user_password: req.body.user_password,
-    user_role: "User"
-  })
   try {
+    const hashed_pass = await bcrypt.hash(req.body.user_password, 10)
+    var user = new User({
+      user_login: req.body.user_login,
+      user_password: hashed_pass,
+      user_role: "User"
+    })
     await user.save()
     res.status(201).send(user);
   } catch (error) {
     res.status(400).send(error)
+    console.log(error)
   }
 });
 
 // UPDATE USER
 router.patch('/update', async function(req, res, next) {
-  let user_check = await User.findOne({_id: req.body._id, user_password: req.body.user_password});
-  if (user_check){
-    //console.log(user_check)
-    if(req.body.new_password){
-      user_check.user_password = req.body.new_password;
-    }
-    if(req.body.user_name){
-      user_check.user_name = req.body.user_name;
-    }
-    if(req.body.user_surname){
-      user_check.user_surname = req.body.user_surname;
-    }
-    if(req.body.birth_date){
-      user_check.birth_date = req.body.birth_date;
-    }
+  let user = await User.findById(req.body._id);
+  const verify = await bcrypt.compare(req.body.user_password, user.user_password)
+  if (verify){
     try {
-      await user_check.save()
-      res.status(200).send(user_check);
+      if(req.body.new_password){
+        const hashed_pass = await bcrypt.hash(req.body.new_password, 10)
+        user.user_password = hashed_pass;
+      }
+      if(req.body.user_name){
+        user.user_name = req.body.user_name;
+      }
+      if(req.body.user_surname){
+        user.user_surname = req.body.user_surname;
+      }
+      if(req.body.birth_date){
+        user.birth_date = req.body.birth_date;
+      }
+      await user.save()
+      res.status(200).send(user);
     } catch (error) {
       res.status(400).send(error)
     }
@@ -58,9 +62,14 @@ router.patch('/update', async function(req, res, next) {
 
 // LOGIN USER
 router.post('/login', async function(req, res, next) {
-  let user_check = await User.findOne({user_login: req.body.user_login, user_password: req.body.user_password});
-  if (user_check){
-    return res.status(200).send(user_check) 
+  let user_check = await User.findOne({user_login: req.body.user_login});
+  if(user_check){
+    const verify = await bcrypt.compare(req.body.user_password, user_check.user_password)
+    if (verify){
+      return res.status(200).send(user_check)
+    } else {
+      res.status(400).send("User doesn't exist")
+    }
   } else {
     res.status(400).send("User doesn't exist")
   }
@@ -73,15 +82,17 @@ router.post('/logout', async function(req, res, next) {
 
 // DELETE USER
 router.delete('/delete', async function(req, res, next) {
-  let user_check = await User.findOne({ _id: req.body._id, user_password: req.body.user_password});
-  if(user_check){
-    await UserBook.deleteMany({user_id: user_check._id})
-  }
-  user_check = await User.deleteOne({ _id: req.body._id, user_password: req.body.user_password});
-  if (user_check.deletedCount == 1){
-    return res.status(200).send("User deleted") 
+  let user = await User.findById(req.body._id);
+  const verify = await bcrypt.compare(req.body.user_password, user.user_password)
+  if(verify){
+    let user_check = await User.deleteOne({ _id: req.body._id});
+    if (user_check.deletedCount == 1){
+      return res.status(200).send("User deleted") 
+    } else {
+      res.status(400).send("Bad data")
+    }
   } else {
-    res.status(400).send("Bad data")
+    res.status(400).send("Bad username or password")
   }
 });
 
@@ -216,8 +227,9 @@ router.get('/user', async function(req, res, next) {
 
 //PROMOTE USER
 router.patch('/promote', async function(req, res, next) {
-  let promotor_check = await User.findOne({_id: req.body.promotor_id, user_password: req.body.promotor_password});
-  if(promotor_check){
+  let promotor_check = await User.findOne({_id: req.body.promotor_id});
+  const verify = await bcrypt.compare(req.body.promotor_password, promotor_check.user_password)
+  if(verify){
     if(promotor_check.user_role != 'User'){
       let user_check = await User.findOne({user_login: req.body.promotee});
       if(user_check){
@@ -259,8 +271,9 @@ router.patch('/promote', async function(req, res, next) {
 
 //DELETE USER BY ADMIN
 router.delete('/authority-delete', async function(req, res, next) {
-  let auth_check = await User.findOne({_id: req.body.auth_id, user_password: req.body.auth_password});
-  if(auth_check){
+  let auth_check = await User.findOne({_id: req.body.auth_id});
+  const verify = await bcrypt.compare(req.body.auth_password, auth_check.user_password)
+  if(verify){
     if(auth_check.user_role != 'User'){
       let user_check = await User.deleteOne({ user_login: req.body.user_login});
       if (user_check.deletedCount == 1){
@@ -289,13 +302,15 @@ charactersLength)));
 
 //RESET PASSWORD For User
 router.patch('/authority-reset-pass', async function(req, res, next) {
-  let auth_check = await User.findOne({_id: req.body.auth_id, user_password: req.body.auth_password});
-  if(auth_check){
+  let auth_check = await User.findOne({_id: req.body.auth_id});
+  const verify = await bcrypt.compare(req.body.auth_password, auth_check.user_password)
+  if(verify){
     if(auth_check.user_role != 'User'){
       let user_check = await User.findOne({ user_login: req.body.user_login});
       if (user_check){
         var passwd = makeTempPasswd(8);
-        user_check.user_password = passwd;
+        const hashed_pass = await bcrypt.hash(passwd, 10)
+        user_check.user_password = hashed_pass;
         try {
           await user_check.save()
           res.status(200).send('Successfully reseted password to: '+passwd);
