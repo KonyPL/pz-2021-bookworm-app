@@ -101,27 +101,31 @@ async function calculate_rating(json_table){
 
 // LIST BOOKS
 router.get('/list', async function(req, res, next) {
-  params= {};
-  if(req.query.author)
-    params.book_author = { "$regex": req.query.author, "$options": "i" };
-  if(req.query.genre){
-    let gen = await Genre.findOne({name: { "$regex": req.query.genre, "$options": "i" }})
-    params.book_genre = gen._id;
-  }
-  if(req.query.name)
-    params.book_name = { "$regex": req.query.name, "$options": "i" };
-  if(req.query.release_date)
-    params.book_released = req.query.release_date;
-  
-  let all = await Book.find(params)
-  var ratedBooks = await calculate_rating(all)
-  if(req.query.rating)
-    for(var b in ratedBooks){
-      if(ratedBooks[b].book_rating != req.query.rating){
-        ratedBooks.splice(b, 1)
-      }
+  try{
+    params= {};
+    if(req.query.author)
+      params.book_author = { "$regex": req.query.author, "$options": "i" };
+    if(req.query.genre){
+      let gen = await Genre.findOne({name: { "$regex": req.query.genre, "$options": "i" }})
+      params.book_genre = gen._id;
     }
-  res.status(200).send(ratedBooks);
+    if(req.query.name)
+      params.book_name = { "$regex": req.query.name, "$options": "i" };
+    if(req.query.release_date)
+      params.book_released = req.query.release_date;
+    
+    let all = await Book.find(params)
+    var ratedBooks = await calculate_rating(all)
+    if(req.query.rating)
+      for(var b in ratedBooks){
+        if(ratedBooks[b].book_rating != req.query.rating){
+          ratedBooks.splice(b, 1)
+        }
+      }
+    res.status(200).send(ratedBooks);
+  }catch(error){
+    res.status(400).send("Couldn't find books");
+  }
 });
 
 //GET BOOK
