@@ -1189,7 +1189,39 @@ class Window extends React.Component {
 		that.setState({
 			profilPage: true,
 		});
+		var stat;
 		if(choice == 'user-stats'){
+			const requestOptionsGet = {
+				method: 'GET',
+				headers: { 'Content-Type': 'application/json' },
+			};
+			fetch('https://localhost:9000/users/user?login=' + that.state.userName, requestOptionsGet)
+			.then(function(resp){
+				stat = resp.status
+				return resp.json()
+			})
+			.then(function(data){
+				if(stat == 200){
+					try{
+						that.setState({
+							dateOfBirth: data.birth_date.substring(0, 10),
+							name: data.user_name,
+							surName: data.user_surname,
+							userName: data.user_login,
+							favGenre: data.favourite_genre,
+							favAuthor: data.favourite_author
+						})
+					}
+					catch(err){
+
+					}
+					that.setState({
+						read: data.finished_books,
+						planned: data.planned_books,
+						ongoing: data.ongoing_books,
+					})
+				}
+			})
 			that.setState({
 				newBooksChosen: false,
 				genresChosen: false,
