@@ -2614,9 +2614,9 @@ class Window extends React.Component {
 											<p style={{textAlign: 'center',	color: 'white',	backgroundColor: '#b30000', fontSize: '30px'}}>My statistics</p>
 											<div class='statsText' style={{display: 'inline-block', width: '100%', textAlign: 'center'}}>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books finished: {this.state.read}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Finished books: {this.state.read}</p>
 												<br></br>
-												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Books planned: {this.state.planned}</p>
+												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Planned books: {this.state.planned}</p>
 												<br></br>
 												<p style={{textAlign: 'center',	color: 'white', fontSize: '25px'}}>Ongoing books: {this.state.ongoing}</p>
 												<br></br>
